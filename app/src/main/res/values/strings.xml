@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MobileSpeedometer</string>
+    <string name="date_mask">DD:MM:YYYY</string>
+    <string name="time_mask">HH:MM:SS</string>
+    <string name="speed_title">Скорость:</string>
+    <string name="speed_mask">999</string>
+    <string name="speed_unit">КМ/Ч</string>
+    <string name="timer_title">Секундомер:</string>
+    <string name="timer_mask">SS:MSS</string>
+    <string name="timer_unit">СЕК</string>
+    <string name="btn_start_measure">ЗАМЕР</string>
+    <string name="results_title">Результаты</string>
+    <string name="date_column_title">Дата</string>
+    <string name="time_column_title">Время</string>
+    <string name="result_column_title">Время 0 - 100</string>
+</resources>
