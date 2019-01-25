@@ -13,4 +13,6 @@
     <string name="date_column_title">Дата</string>
     <string name="time_column_title">Время</string>
     <string name="result_column_title">Время 0 - 100</string>
+    <string name="status_Disabled">Disabled</string>
+    <string name="GPS_status_title">Статус GPS:</string>
 </resources>
