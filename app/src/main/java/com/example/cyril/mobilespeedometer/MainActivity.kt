@@ -44,6 +44,9 @@ class MainActivity : AppCompatActivity() {
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         locationListener = GPSLocationListener(this)
+        if (UtilsPermissions(this).checkSelfPermission(this)) {
+            employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
+        }
 
     }
 
