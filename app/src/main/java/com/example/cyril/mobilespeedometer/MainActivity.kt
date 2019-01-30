@@ -7,10 +7,12 @@ import android.widget.TextView
 import android.location.LocationManager
 import android.support.v7.app.AlertDialog
 import android.widget.Toast
+import com.example.cyril.mobilespeedometer.Listeners.GPSLocationListener
+import com.example.cyril.mobilespeedometer.Listeners.SpeedChangeListener
+import com.example.cyril.mobilespeedometer.Model.Speed
 
 class MainActivity : AppCompatActivity() {
-
-    var currentSpeed : Int = 999 //we need it to equal 0 for checking in "ready to race"
+    var speed : Speed? = null
     var displayedDate : TextView? = null
     var displayedTime : TextView? = null
     var displayedSpeed : TextView? = null
@@ -44,6 +46,8 @@ class MainActivity : AppCompatActivity() {
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         locationListener = GPSLocationListener(this)
+        speed = Speed(0, SpeedChangeListener(this))
+
         if (UtilsPermissions(this).checkSelfPermission(this)) {
             employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
         }
@@ -53,7 +57,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume(){
         super.onResume()
         employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
-
     }
 
     override fun onPause() {
@@ -61,21 +64,14 @@ class MainActivity : AppCompatActivity() {
         locationManager?.removeUpdates(locationListener)
     }
 
-
-
     fun changeGPSStatus(status : String) {
         displayedGPSStatus?.setText(status)
-    }
-
-    fun changeSpeed(speed : Int) {
-        currentSpeed = speed*3600/1000 //internet says location.speed is in m/s
-        displayedSpeed?.setText(currentSpeed)
     }
 
     private fun readyToRace() {
 
         //if car is moving, user will receive a message
-        if (currentSpeed > 5) {
+/*        if (speed?.currentSpeed > 2) {
             AlertDialog.Builder(this)
                 .setTitle("Ошибка!")
                 .setMessage("Автомобиль в движении! Пожалуйста, остановитесь полностью!")
@@ -87,14 +83,13 @@ class MainActivity : AppCompatActivity() {
 
         } else {
             employLocationManager(FAST_INTERVAL, SHORT_DISTANCE)
-        }
+        }*/
 
     }
 
     fun employLocationManager(interval : Long, distance : Float) {
         try {
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, interval, distance, locationListener)
-            changeGPSStatus("Launching")
         } catch (ex: SecurityException) {
             changeGPSStatus("SecurityException") //just for test-info, later will change this line
         }
