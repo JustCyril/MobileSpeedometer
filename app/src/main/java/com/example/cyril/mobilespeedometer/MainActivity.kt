@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.location.LocationManager
-import android.support.v7.app.AlertDialog
-import android.widget.Toast
 import com.example.cyril.mobilespeedometer.Listeners.GPSLocationListener
-import com.example.cyril.mobilespeedometer.Listeners.SpeedChangeListener
 import com.example.cyril.mobilespeedometer.Model.Speed
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     var displayedGPSStatus : TextView? = null
     var btnReady : Button? = null
     var locationListener : GPSLocationListener? = null
+    lateinit var presenter : MainPresenter
     private var locationManager : LocationManager? = null
 
     //update-time for locationManager (how often there will be any update)
@@ -45,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         btnReady?.setOnClickListener {readyToRace()}
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
-        locationListener = GPSLocationListener(this)
-        speed = Speed(0, SpeedChangeListener(this))
+        presenter = MainPresenter(this)
+        locationListener = GPSLocationListener(presenter)
 
         if (UtilsPermissions(this).checkSelfPermission(this)) {
             employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
@@ -66,6 +64,10 @@ class MainActivity : AppCompatActivity() {
 
     fun changeGPSStatus(status : String) {
         displayedGPSStatus?.setText(status)
+    }
+
+    fun changeSpeed(speed : Int) {
+        displayedSpeed?.setText(speed.toString())
     }
 
     private fun readyToRace() {

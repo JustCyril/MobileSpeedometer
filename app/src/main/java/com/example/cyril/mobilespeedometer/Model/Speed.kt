@@ -1,11 +1,11 @@
 package com.example.cyril.mobilespeedometer.Model
 
-import com.example.cyril.mobilespeedometer.Listeners.SpeedChangeListener
+import com.example.cyril.mobilespeedometer.MainPresenter
 import kotlin.properties.Delegates
 
-class Speed (speed : Int, listener: SpeedChangeListener){
-    var currentSpeed : Int by Delegates.observable(
-        initialValue = 0,
-        onChange = {prop, old, new -> listener.onValueChange(new)}
-    )
+class Speed (private var speed : Int, private var presenter: MainPresenter){
+    var currentSpeed : Int by Delegates.observable(speed){ prop, old, new ->
+        presenter.changeSpeed(new)
+        speed = new
+    }
 }
