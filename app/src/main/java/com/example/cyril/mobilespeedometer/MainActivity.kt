@@ -9,7 +9,6 @@ import com.example.cyril.mobilespeedometer.Listeners.GPSLocationListener
 import com.example.cyril.mobilespeedometer.Model.Speed
 
 class MainActivity : AppCompatActivity() {
-    var speed : Speed? = null
     var displayedDate : TextView? = null
     var displayedTime : TextView? = null
     var displayedSpeed : TextView? = null
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         displayedGPSStatus?.setText(status)
     }
 
-    fun changeSpeed(speed : Int) {
+    fun changeDisplayedSpeed(speed : Int) {
         displayedSpeed?.setText(speed.toString())
     }
 

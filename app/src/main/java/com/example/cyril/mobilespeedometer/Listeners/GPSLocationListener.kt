@@ -10,8 +10,7 @@ class GPSLocationListener (private var presenter: MainPresenter) : LocationListe
     lateinit var location: Location
 
     override fun onLocationChanged(location: Location) {
-        val speed = (location.speed.toInt())*3600/1000 //in km/h
-        presenter.changeSpeed(speed)
+        presenter.changeSpeed(location.speed.toInt())
     }
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
 
