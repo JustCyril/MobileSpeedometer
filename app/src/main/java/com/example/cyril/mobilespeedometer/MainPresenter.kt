@@ -1,16 +1,22 @@
 package com.example.cyril.mobilespeedometer
 
-import com.example.cyril.mobilespeedometer.Listeners.IObserver
+import com.example.cyril.mobilespeedometer.Listeners.GPSLocationListener
+import com.example.cyril.mobilespeedometer.Listeners.IGPSObserver
+import com.example.cyril.mobilespeedometer.Model.ISpeedObserver
 import com.example.cyril.mobilespeedometer.Model.Speed
 import java.util.*
 
-class MainPresenter (private var activity: MainActivity) : IObserver {
+class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSObserver {
 
     private var speed = Speed(0)
+    open var locationListener = GPSLocationListener()
 
     init {
         this.speed = speed
         speed.registerObserver(this)
+
+        this.locationListener = locationListener
+        locationListener.registerObserver(this)
     }
 
     fun changeSpeed (incomeSpeed: Int) {
@@ -22,11 +28,19 @@ class MainPresenter (private var activity: MainActivity) : IObserver {
     //... да и вообще Speed должна быть "слушателем" навигации. Как только изменилось что-то, в ней меняются
     //данные, а она уже рассылает всем уведомления
 
-    override fun onIntValueChange(value: Int) {
-        activity.changeDisplayedSpeed(value)
+    override fun onSpeedChange() {
+        activity.changeDisplayedSpeed(speed.currentValue)
     }
 
-    fun changeGPSStatus (status : String) {
+    override fun onLocationChange() {
+        changeSpeed(locationListener.location.speed.toInt())
+    }
+
+    override fun onGPSStatusChange(status : String) {
+        activity.changeGPSStatus(status)
+    }
+
+    override fun onProviderStatusChange(status : String) {
         activity.changeGPSStatus(status)
     }
 }

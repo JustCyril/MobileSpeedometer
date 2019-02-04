@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     var displayedCounter : TextView? = null
     var displayedGPSStatus : TextView? = null
     var btnReady : Button? = null
-    var locationListener : GPSLocationListener? = null
+    //var locationListener : GPSLocationListener? = null
     lateinit var presenter : MainPresenter
     private var locationManager : LocationManager? = null
 
@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         presenter = MainPresenter(this)
-        locationListener = GPSLocationListener(presenter)
 
         if (UtilsPermissions(this).checkSelfPermission(this)) {
             employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
@@ -58,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        locationManager?.removeUpdates(locationListener)
+        locationManager?.removeUpdates(presenter.locationListener)
     }
 
     fun changeGPSStatus(status : String) {
@@ -90,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
     fun employLocationManager(interval : Long, distance : Float) {
         try {
-            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, interval, distance, locationListener)
+            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, interval, distance, presenter.locationListener)
         } catch (ex: SecurityException) {
             changeGPSStatus("SecurityException") //just for test-info, later will change this line
         }
