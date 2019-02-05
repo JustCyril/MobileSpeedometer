@@ -1,13 +1,14 @@
-package com.example.cyril.mobilespeedometer.Listeners
+package com.example.cyril.mobilespeedometer.Navi
 
 import android.location.Location
 import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import java.util.*
 
-class GPSLocationListener : LocationListener, IGPSObservable {
+class GPSLocationListener: LocationListener, IGPSObservable {
 
-    lateinit var location: Location
+    var location = Location(LocationManager.GPS_PROVIDER)
 
     private val observers: MutableList<IGPSObserver>
 

@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.location.LocationManager
-import com.example.cyril.mobilespeedometer.Listeners.GPSLocationListener
-import com.example.cyril.mobilespeedometer.Model.Speed
 
 class MainActivity : AppCompatActivity() {
     var displayedDate : TextView? = null
@@ -17,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     var btnReady : Button? = null
     //var locationListener : GPSLocationListener? = null
     lateinit var presenter : MainPresenter
-    private var locationManager : LocationManager? = null
+    var locationManager : LocationManager? = null
 
     //update-time for locationManager (how often there will be any update)
     private val FAST_INTERVAL = 10L
