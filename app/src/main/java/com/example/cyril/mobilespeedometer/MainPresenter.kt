@@ -5,6 +5,7 @@ import com.example.cyril.mobilespeedometer.Navi.GPSLocationListener
 import com.example.cyril.mobilespeedometer.Navi.IGPSObserver
 import com.example.cyril.mobilespeedometer.Model.ISpeedObserver
 import com.example.cyril.mobilespeedometer.Model.SpeedHelper
+import java.text.DecimalFormat
 
 class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSObserver {
 
@@ -17,6 +18,18 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
 
         this.locationListener = locationListener
         locationListener.registerObserver(this)
+    }
+    override fun onLocationChange() {
+        changeSpeed(locationListener.location.speed.toInt())
+        changeCorrdinates(locationListener.location.latitude, locationListener.location.longitude)
+    }
+
+    override fun onGPSStatusChange(status : String) {
+        activity.changeGPSStatus(status)
+    }
+
+    override fun onProviderStatusChange(status : String) {
+        activity.changeGPSStatus(status)
     }
 
     fun changeSpeed (incomeSpeed: Int) {
@@ -32,16 +45,9 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         activity.changeDisplayedSpeed(newSpeed)
     }
 
-    override fun onLocationChange() {
-        changeSpeed(locationListener.location.speed.toInt())
-    }
-
-    override fun onGPSStatusChange(status : String) {
-        activity.changeGPSStatus(status)
-    }
-
-    override fun onProviderStatusChange(status : String) {
-        activity.changeGPSStatus(status)
+    fun changeCorrdinates(lat: Double, long: Double) {
+        val formatter = DecimalFormat("0.####")
+        activity.changeDisplayedCoordinates(formatter.format(lat), formatter.format(long))
     }
 }
 

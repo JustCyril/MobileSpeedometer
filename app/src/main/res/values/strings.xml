@@ -15,4 +15,6 @@
     <string name="result_column_title">Время 0 - 100</string>
     <string name="status_Disabled">Disabled</string>
     <string name="GPS_status_title">Статус GPS:</string>
+    <string name="currentCoord_title">Текущие координаты</string>
+    <string name="coordinate_mask">00.000</string>
 </resources>

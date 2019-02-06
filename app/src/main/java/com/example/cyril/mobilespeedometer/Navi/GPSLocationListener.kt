@@ -24,7 +24,8 @@ class GPSLocationListener: LocationListener, IGPSObservable {
         observers.remove(o)
     }
 
-    override fun onLocationChanged(location: Location) {
+    override fun onLocationChanged(loc: Location) {
+        location = loc
         notifyLocationChanged()
     }
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {

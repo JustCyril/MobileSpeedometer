@@ -13,7 +13,10 @@ class MainActivity : AppCompatActivity() {
     var displayedCounter : TextView? = null
     var displayedGPSStatus : TextView? = null
     var btnReady : Button? = null
-    //var locationListener : GPSLocationListener? = null
+
+    var displayedLatitude : TextView? = null
+    var displayedLongitude : TextView? = null
+
     lateinit var presenter : MainPresenter
     var locationManager : LocationManager? = null
 
@@ -35,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         displayedTime = findViewById(R.id.textView_Time)
         displayedSpeed = findViewById(R.id.textView_CurrentSpeed)
         displayedCounter = findViewById(R.id.textView_TimerCounter)
+        displayedLatitude = findViewById(R.id.textView_GPS_latitude)
+        displayedLongitude = findViewById(R.id.textView_GPS_longitude)
 
         btnReady = findViewById(R.id.btn_ready_to_measure)
         btnReady?.setOnClickListener {readyToRace()}
@@ -91,6 +96,11 @@ class MainActivity : AppCompatActivity() {
         } catch (ex: SecurityException) {
             changeGPSStatus("SecurityException") //just for test-info, later will change this line
         }
+    }
+
+    fun changeDisplayedCoordinates (lat: String, long: String) {
+        displayedLatitude?.setText(lat)
+        displayedLongitude?.setText(long)
     }
 
 }
