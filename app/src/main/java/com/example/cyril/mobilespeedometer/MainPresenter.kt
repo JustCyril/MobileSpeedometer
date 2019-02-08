@@ -49,5 +49,9 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         val formatter = DecimalFormat("0.####")
         activity.changeDisplayedCoordinates(formatter.format(lat), formatter.format(long))
     }
+
+    fun onStartStopwatch() {
+
+    }
 }
 

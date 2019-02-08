@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MobileSpeedometer</string>
     <string name="date_mask">DD:MM:YYYY</string>
-    <string name="time_mask">HH:MM:SS</string>
+    <string name="time_mask">HH:MM</string>
     <string name="speed_title">Скорость:</string>
     <string name="speed_mask">999</string>
     <string name="speed_unit">КМ/Ч</string>

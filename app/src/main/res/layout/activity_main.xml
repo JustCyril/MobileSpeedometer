@@ -57,19 +57,18 @@
             app:layout_constraintLeft_toLeftOf="parent"
             android:paddingLeft="6dp">
     </TextView>
-    <TextView
+    <Chronometer
             android:id="@+id/textView_Time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/time_mask"
             android:textSize="18sp"
             android:textStyle="bold"
             android:typeface="serif"
             app:layout_constraintBottom_toBottomOf="@+id/textView_Date"
             app:layout_constraintStart_toEndOf="@+id/textView_Date"
             android:paddingLeft="6dp">
-    </TextView>
+    </Chronometer>
 
     <!-- third line: speed: title, value and units -->
 
@@ -297,6 +296,40 @@
             app:layout_constraintLeft_toRightOf="@+id/textView_GPS_latitude"
             app:layout_constraintRight_toRightOf="@+id/textView_currentCoord_title">
     </TextView>
+
+
+    <Chronometer
+            android:id="@+id/chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btn_Start"
+            app:layout_constraintDimensionRatio="1"/>
+
+
+    <!--Just for different test-->
+    <Button
+            android:id="@+id/btn_Start"
+            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:text="Start"
+            android:textStyle="bold"
+            android:layout_gravity="end"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/textView_currentCoord_title"
+            app:layout_constraintDimensionRatio="1"/>
+    <Button
+            android:id="@+id/btn_Stop"
+            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:text="Stop"
+            android:textStyle="bold"
+            android:layout_gravity="end"
+            app:layout_constraintLeft_toRightOf="@+id/btn_Start"
+            app:layout_constraintBottom_toTopOf="@+id/textView_currentCoord_title"
+            app:layout_constraintDimensionRatio="1"/>
 
 
 </android.support.constraint.ConstraintLayout>
