@@ -127,10 +127,10 @@
 
     </TextView>
     <TextView
-            android:id="@+id/textView_TimerCounter"
+            android:id="@+id/textView_TimerCounter_seconds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/timer_mask"
+            android:text="@string/timer_mask_seconds"
             android:gravity="center"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -138,6 +138,30 @@
             app:layout_constraintBottom_toBottomOf="@+id/textView_Timer_Title"
             app:layout_constraintStart_toEndOf="@+id/textView_Timer_Title"
             android:paddingLeft="6dp">
+    </TextView>
+    <TextView
+            android:id="@+id/textView_TimerCounter_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timer_mask_divider"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:typeface="serif"
+            app:layout_constraintBottom_toBottomOf="@+id/textView_Timer_Title"
+            app:layout_constraintStart_toEndOf="@+id/textView_TimerCounter_seconds">
+    </TextView>
+    <TextView
+            android:id="@+id/textView_TimerCounter_millis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/timer_mask_millis"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:typeface="serif"
+            app:layout_constraintBottom_toBottomOf="@+id/textView_Timer_Title"
+            app:layout_constraintStart_toEndOf="@+id/textView_TimerCounter_divider">
     </TextView>
     <TextView
             android:id="@+id/textView_Timer_Unit"
@@ -148,7 +172,7 @@
             android:textStyle="bold"
             android:typeface="serif"
             app:layout_constraintBottom_toBottomOf="@+id/textView_Timer_Title"
-            app:layout_constraintStart_toEndOf="@+id/textView_TimerCounter"
+            app:layout_constraintStart_toEndOf="@+id/textView_TimerCounter_millis"
             android:paddingLeft="6dp">
     </TextView>
 

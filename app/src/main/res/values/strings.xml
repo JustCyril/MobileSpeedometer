@@ -7,6 +7,9 @@
     <string name="speed_unit">КМ/Ч</string>
     <string name="timer_title">Секундомер:</string>
     <string name="timer_mask">SS:MSS</string>
+    <string name="timer_mask_seconds">SS</string>
+    <string name="timer_mask_divider">:</string>
+    <string name="timer_mask_millis">MSS</string>
     <string name="timer_unit">СЕК</string>
     <string name="btn_start_measure">ЗАМЕР</string>
     <string name="results_title">Результаты последнего замера</string>

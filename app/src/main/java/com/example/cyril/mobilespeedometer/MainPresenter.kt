@@ -50,8 +50,12 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         activity.changeDisplayedCoordinates(formatter.format(lat), formatter.format(long))
     }
 
-    fun onStartStopwatch() {
+    fun StartTimer() {
+        activity.StartTimer()
+    }
 
+    fun StopTimer() {
+        activity.StopTimer()
     }
 }
 
