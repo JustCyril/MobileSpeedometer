@@ -12,14 +12,17 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.math.truncate
 
 class MainActivity : AppCompatActivity() {
     var displayedDate : TextView? = null
-    var displayedTime : TextView? = null
+    var displayedTime : Chronometer? = null
     var displayedSpeed : TextView? = null
     var displayedCounterSeconds : TextView? = null
     var displayedCounterMillis : TextView? = null
     var displayedGPSStatus : TextView? = null
+    var displayedResultDate : TextView? = null
+    var displayedResult : TextView? = null
     var btnReady : Button? = null
     var readyToRace : Boolean = false
     var inRace : Boolean = false
@@ -28,8 +31,9 @@ class MainActivity : AppCompatActivity() {
     var btnStart : Button? = null
     var btnStop: Button? = null
 
-    val timer = Timer()
-    var millis = 0
+    var timer: Timer? = null
+    var centisecs = 0
+    var decisecs = 0 //tried to use millis, but there was a huge gape between real time and showed timer (suppose, because of frequent textView redrawing)
     var secs = 0
 
     var displayedLatitude : TextView? = null
@@ -54,10 +58,14 @@ class MainActivity : AppCompatActivity() {
         displayedGPSStatus = findViewById(R.id.textView_GPS_status)
         displayedDate = findViewById(R.id.textView_Date)
         setCurrentDate()
-        displayedTime = findViewById(R.id.textView_Time)
+        displayedTime = findViewById(R.id.chrono_Time)
+        setCurrentTime()
         displayedSpeed = findViewById(R.id.textView_CurrentSpeed)
         displayedCounterSeconds = findViewById(R.id.textView_TimerCounter_seconds)
         displayedCounterMillis = findViewById(R.id.textView_TimerCounter_millis)
+
+        displayedResultDate = findViewById(R.id.textView_date_result)
+        displayedResult = findViewById(R.id.textView_timer_result)
 
         displayedLatitude = findViewById(R.id.textView_GPS_latitude)
         displayedLongitude = findViewById(R.id.textView_GPS_longitude)
@@ -110,6 +118,12 @@ class MainActivity : AppCompatActivity() {
         displayedDate?.setText(formatter.format(Date()))
     }
 
+    fun setCurrentTime() {
+        //there will be smt to set real-time in app. Don`t know what it will be yet.
+        displayedTime?.setBase(SystemClock.elapsedRealtime())
+        displayedTime?.start()
+    }
+
     private fun readyToRace() {
 
         //if car is moving, user will receive a message
@@ -118,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                 .setTitle("Ошибка!")
                 .setMessage("Автомобиль в движении! Пожалуйста, остановитесь полностью!")
                 .setPositiveButton("Я всё понял!") { dialog, which ->
-                    Toast.makeText(this, "Умница", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Умница!", Toast.LENGTH_SHORT).show()
                 }
                 .create()
                 .show()
@@ -155,32 +169,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun StartTimer() {
-        displayedCounterMillis?.setText(millis.toString())
+        timer = Timer() //возможно это костыль, но я не понял, как грамотно остановить таймер, инициализированный ранее. cancel() убивал его, иных методов при гуглеже не нашел
+        displayedCounterMillis?.setText(decisecs.toString())
         displayedCounterSeconds?.setText(secs.toString())
-        //если эту строчку расскомментить, то вылетает сразу же
-        //timer.cancel()
-        timer.schedule(0, 1) {onTimerTick()}
+        timer?.schedule(0, 10) {
+            runOnUiThread({
+                    onTimerTick()
+            })
+        }
     }
 
     fun StopTimer() {
-        timer.cancel()
-        millis = 0
+        timer?.cancel()
+        timer?.purge()
+        presenter.saveResult(secs, centisecs, displayedDate?.text.toString())
+        decisecs = 0
         secs = 0
     }
 
-    fun onTimerTick() {
-        millis = millis + 1
-        //displayedCounterSeconds?.setText(millis.toString())
-
-        if ((millis%100) == 0) {
-            displayedCounterSeconds?.setText((millis / 100).toString())
+    fun onTimerTick(){
+        //there is so huge mistake between real timer and this logic :(
+        //first idea: use timer period 100, not 10. And work without centisecs.
+        centisecs++
+        if (centisecs%10 == 0) {
+            decisecs = centisecs/10
+            if (decisecs == 10) {
+                secs++
+                displayedCounterSeconds?.setText(secs.toString())
+                decisecs = 0
+                centisecs = 0
+            }
+            displayedCounterMillis?.setText(decisecs.toString())
         }
-        displayedCounterMillis?.setText(millis.toString())
-        if ((millis%1000) == 0) {
-            secs = secs + 1
-            displayedCounterSeconds?.setText(secs.toString())
-        }
+    }
 
+    fun showResult (result: String, date: String) {
+        displayedResult?.setText(result)
+        displayedResultDate?.setText(date)
     }
 
 }

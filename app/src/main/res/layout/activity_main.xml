@@ -58,7 +58,7 @@
             android:paddingLeft="6dp">
     </TextView>
     <Chronometer
-            android:id="@+id/textView_Time"
+            android:id="@+id/chrono_Time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"

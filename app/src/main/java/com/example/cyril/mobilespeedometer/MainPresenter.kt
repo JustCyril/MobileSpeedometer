@@ -57,5 +57,10 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
     fun StopTimer() {
         activity.StopTimer()
     }
+
+    fun saveResult (secs: Int, decisecs: Int, date: String) {
+        val result = "$secs:$decisecs"
+        activity.showResult(result, date)
+    }
 }
 
