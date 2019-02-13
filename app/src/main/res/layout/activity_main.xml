@@ -57,8 +57,12 @@
             app:layout_constraintLeft_toLeftOf="parent"
             android:paddingLeft="6dp">
     </TextView>
-    <Chronometer
-            android:id="@+id/chrono_Time"
+    <!-- с API17 и далее есть TextClock, которые умеют очень много всего
+     по сравнению с DigitalClock, так что пусть пока эти висят с "кривым"
+     часовым поясом, чтобы на дедушкофоне можно было запустить
+     Если очень надо, можно замутить TextView с обновлением по Handler -->
+    <DigitalClock
+            android:id="@+id/digitalClock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -67,8 +71,7 @@
             android:typeface="serif"
             app:layout_constraintBottom_toBottomOf="@+id/textView_Date"
             app:layout_constraintStart_toEndOf="@+id/textView_Date"
-            android:paddingLeft="6dp">
-    </Chronometer>
+            android:paddingLeft="6dp"/>
 
     <!-- third line: speed: title, value and units -->
 
@@ -182,13 +185,13 @@
             android:layout_height="0dp"
             android:layout_width="wrap_content"
             android:gravity="center"
-            android:text="@string/btn_start_measure"
+            android:text="@string/btn_ready_to_race"
             android:textStyle="bold"
             android:layout_gravity="end"
             app:layout_constraintTop_toBottomOf="@+id/headbar"
-            app:layout_constraintStart_toEndOf="@+id/textView_Timer_Unit"
+            app:layout_constraintStart_toStartOf="@+id/textView_time_result_column"
             app:layout_constraintBottom_toBottomOf="@+id/textView_Timer_Unit"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textView_time_result_column"
             app:layout_constraintDimensionRatio="1"/>
 
     <!-- fifth line: title of the current result section -->
@@ -321,7 +324,7 @@
             app:layout_constraintRight_toRightOf="@+id/textView_currentCoord_title">
     </TextView>
 
-
+    <!--Just for different test
     <Chronometer
             android:id="@+id/chronometer"
             android:layout_width="wrap_content"
@@ -331,7 +334,7 @@
             app:layout_constraintDimensionRatio="1"/>
 
 
-    <!--Just for different test-->
+
     <Button
             android:id="@+id/btn_Start"
             android:layout_height="0dp"
@@ -353,7 +356,7 @@
             android:layout_gravity="end"
             app:layout_constraintLeft_toRightOf="@+id/btn_Start"
             app:layout_constraintBottom_toTopOf="@+id/textView_currentCoord_title"
-            app:layout_constraintDimensionRatio="1"/>
+            app:layout_constraintDimensionRatio="1"/> -->
 
 
 </android.support.constraint.ConstraintLayout>

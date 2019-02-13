@@ -2,13 +2,10 @@ package com.example.cyril.mobilespeedometer
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import android.location.LocationManager
 import android.os.SystemClock
 import android.support.v7.app.AlertDialog
-import android.widget.Chronometer
-import android.widget.Toast
+import android.widget.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
@@ -16,16 +13,15 @@ import kotlin.math.truncate
 
 class MainActivity : AppCompatActivity() {
     var displayedDate : TextView? = null
-    var displayedTime : Chronometer? = null
+    //var displayedTime : TextView? = null
     var displayedSpeed : TextView? = null
     var displayedCounterSeconds : TextView? = null
     var displayedCounterMillis : TextView? = null
     var displayedGPSStatus : TextView? = null
     var displayedResultDate : TextView? = null
+    var displayedResultTime : TextView? = null
     var displayedResult : TextView? = null
     var btnReady : Button? = null
-    var readyToRace : Boolean = false
-    var inRace : Boolean = false
 
     var chrono: Chronometer? = null
     var btnStart : Button? = null
@@ -50,6 +46,10 @@ class MainActivity : AppCompatActivity() {
     private val SHORT_DISTANCE = 1f
     private val LONG_DISTANCE = 10f
 
+    val dateFormatter = SimpleDateFormat("dd-MM-yyyy")
+    val timeFormatter = SimpleDateFormat("HH:mm")
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,26 +58,28 @@ class MainActivity : AppCompatActivity() {
         displayedGPSStatus = findViewById(R.id.textView_GPS_status)
         displayedDate = findViewById(R.id.textView_Date)
         setCurrentDate()
-        displayedTime = findViewById(R.id.chrono_Time)
-        setCurrentTime()
+        //displayedTime = findViewById(R.id.textView_time)
+        //setCurrentTime()
         displayedSpeed = findViewById(R.id.textView_CurrentSpeed)
         displayedCounterSeconds = findViewById(R.id.textView_TimerCounter_seconds)
         displayedCounterMillis = findViewById(R.id.textView_TimerCounter_millis)
 
         displayedResultDate = findViewById(R.id.textView_date_result)
+        displayedResultTime = findViewById(R.id.textView_time_result)
         displayedResult = findViewById(R.id.textView_timer_result)
 
         displayedLatitude = findViewById(R.id.textView_GPS_latitude)
         displayedLongitude = findViewById(R.id.textView_GPS_longitude)
 
-        btnStart = findViewById(R.id.btn_Start)
+/*        btnStart = findViewById(R.id.btn_Start)
         btnStart?.setOnClickListener { onStartClick() }
         btnStop = findViewById(R.id.btn_Stop)
         btnStop?.setOnClickListener { onStopClick() }
-        chrono = findViewById(R.id.chronometer)
+        chrono = findViewById(R.id.chronometer)*/
 
         btnReady = findViewById(R.id.btn_ready_to_measure)
-        btnReady?.setOnClickListener {readyToRace()}
+        initBtnReady()
+
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         presenter = MainPresenter(this)
@@ -104,29 +106,23 @@ class MainActivity : AppCompatActivity() {
 
     fun changeDisplayedSpeed(speed : Int) {
         displayedSpeed?.setText(speed.toString())
-/*
-        if (readyToRace) {
-            if (speed > 1) {
-                presenter.startTimer()
-                inRace = true
-            }
-        }*/
     }
 
     fun setCurrentDate(){
-        val formatter = SimpleDateFormat("dd-MM-yyyy")
-        displayedDate?.setText(formatter.format(Date()))
+        displayedDate?.setText(dateFormatter.format(Date()))
     }
 
-    fun setCurrentTime() {
+/*    fun setCurrentTime() {
         //there will be smt to set real-time in app. Don`t know what it will be yet.
-        displayedTime?.setBase(SystemClock.elapsedRealtime())
-        displayedTime?.start()
+    }*/
+
+    fun onReadyToRaceClick() {
+        presenter.readyToRace()
     }
 
-    private fun readyToRace() {
-
-        //if car is moving, user will receive a message
+    fun readyToRace(): Boolean {
+        //if car is moving, user will receive a warning message
+        //and var readyToRace in the presenter will not be changed
        if (displayedSpeed?.text.toString().toInt() > 2) {
             AlertDialog.Builder(this)
                 .setTitle("Ошибка!")
@@ -136,10 +132,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 .create()
                 .show()
+           return false
 
         } else {
             employLocationManager(FAST_INTERVAL, SHORT_DISTANCE)
-            readyToRace = true
+            initTimer()
+           return true
         }
 
     }
@@ -157,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         displayedLongitude?.setText(long)
     }
 
-    fun onStartClick() {
+/*    fun onStartClick() {
         chrono?.setBase(SystemClock.elapsedRealtime())
         chrono?.start()
         presenter.StartTimer()
@@ -166,12 +164,16 @@ class MainActivity : AppCompatActivity() {
     fun onStopClick() {
         chrono?.stop()
         presenter.StopTimer()
+    }*/
+
+    fun initTimer() {
+        timer = Timer() //возможно это костыль, но я не понял, как грамотно остановить таймер, инициализированный ранее. cancel() убивал его, schedule({cancel()}) тоже убивал... иных методов при гуглеже не нашел
+        displayedCounterMillis?.setText(decisecs.toString())
+        displayedCounterSeconds?.setText(secs.toString())
     }
 
     fun StartTimer() {
-        timer = Timer() //возможно это костыль, но я не понял, как грамотно остановить таймер, инициализированный ранее. cancel() убивал его, иных методов при гуглеже не нашел
-        displayedCounterMillis?.setText(decisecs.toString())
-        displayedCounterSeconds?.setText(secs.toString())
+
         timer?.schedule(0, 10) {
             runOnUiThread({
                     onTimerTick()
@@ -182,14 +184,18 @@ class MainActivity : AppCompatActivity() {
     fun StopTimer() {
         timer?.cancel()
         timer?.purge()
-        presenter.saveResult(secs, centisecs, displayedDate?.text.toString())
+        centisecs = 0
         decisecs = 0
         secs = 0
     }
 
+    fun sendResult() {
+        presenter.saveResult(secs, centisecs)
+    }
+
     fun onTimerTick(){
         //there is so huge mistake between real timer and this logic :(
-        //first idea: use timer period 100, not 10. And work without centisecs.
+        //first idea: use timer period 100, not 10. And work without centisecs. But accuracy is low :(
         centisecs++
         if (centisecs%10 == 0) {
             decisecs = centisecs/10
@@ -203,9 +209,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showResult (result: String, date: String) {
+    fun showResult (result: String) {
         displayedResult?.setText(result)
-        displayedResultDate?.setText(date)
+        displayedResultDate?.setText(dateFormatter.format(Date()))
+        displayedResultTime?.setText(timeFormatter.format(Date()))
+    }
+
+    fun initBtnReady() {
+        btnReady?.text = getString(R.string.btn_ready_to_race)
+        btnReady?.setOnClickListener {onReadyToRaceClick()}
+    }
+
+    fun transformBtnReadyToStop() {
+        btnReady?.text = getString(R.string.btn_stop_race)
+        btnReady?.setOnClickListener {onStopRaceClick()}
+    }
+
+    fun onStopRaceClick() {
+        presenter.stopRace()
     }
 
 }
