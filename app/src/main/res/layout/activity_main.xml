@@ -270,7 +270,7 @@
             android:textSize="16sp"
             android:typeface="serif"
             app:layout_constraintLeft_toRightOf="@+id/textView_date_result"
-            app:layout_constraintRight_toRightOf="@+id/textView_Timer_Unit"
+            app:layout_constraintRight_toRightOf="@+id/digitalClock"
             app:layout_constraintBottom_toBottomOf="@+id/textView_date_result">
     </TextView>
     <TextView

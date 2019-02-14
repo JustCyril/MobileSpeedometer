@@ -1,27 +1,26 @@
 package com.example.cyril.mobilespeedometer.Model
 
-import java.util.*
+import com.example.cyril.mobilespeedometer.MainPresenter
 
 class SpeedHelper () : ISpeedObservable {
 
     private  var speed = Speed(0);
-    private val observers: MutableList<ISpeedObserver>
+    private var observer: MainPresenter? = null
 
     init {
-        observers = LinkedList()
+        this.observer = observer
     }
 
-    override fun registerObserver(o: ISpeedObserver) {
-        observers.add(o)
+    override fun registerObserver(o: MainPresenter) {
+        observer = o
     }
 
-    override fun removeObserver(o: ISpeedObserver) {
-        observers.remove(o)
+    override fun removeObserver(o: MainPresenter) {
+        observer = null
     }
 
     override fun notifyObservers(newSpeed: Int) {
-        for (observer in observers)
-            observer.onSpeedChange(newSpeed)
+            observer?.onSpeedChange(newSpeed)
     }
 
     fun setSpeed(incomeSpeed: Int) {

@@ -23,9 +23,9 @@ class MainActivity : AppCompatActivity() {
     var displayedResult : TextView? = null
     var btnReady : Button? = null
 
-    var chrono: Chronometer? = null
+/*    var chrono: Chronometer? = null
     var btnStart : Button? = null
-    var btnStop: Button? = null
+    var btnStop: Button? = null*/
 
     var timer: Timer? = null
     var centisecs = 0
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onTimerTick(){
-        //there is so huge mistake between real timer and this logic :(
+        //there is so huge gape between real timer and this logic :(
         //first idea: use timer period 100, not 10. And work without centisecs. But accuracy is low :(
         centisecs++
         if (centisecs%10 == 0) {
