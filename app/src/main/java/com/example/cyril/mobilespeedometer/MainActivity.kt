@@ -3,13 +3,12 @@ package com.example.cyril.mobilespeedometer
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.location.LocationManager
-import android.os.SystemClock
 import android.support.v7.app.AlertDialog
 import android.widget.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
-import kotlin.math.truncate
+import android.support.v7.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
     var displayedDate : TextView? = null
@@ -18,9 +17,12 @@ class MainActivity : AppCompatActivity() {
     var displayedCounterSeconds : TextView? = null
     var displayedCounterMillis : TextView? = null
     var displayedGPSStatus : TextView? = null
-    var displayedResultDate : TextView? = null
+
+/*    var displayedResultDate : TextView? = null
     var displayedResultTime : TextView? = null
-    var displayedResult : TextView? = null
+    var displayedResult : TextView? = null*/
+    lateinit var recViewResults: RecyclerView? = null
+
     var btnReady : Button? = null
 
 /*    var chrono: Chronometer? = null
@@ -64,9 +66,9 @@ class MainActivity : AppCompatActivity() {
         displayedCounterSeconds = findViewById(R.id.textView_TimerCounter_seconds)
         displayedCounterMillis = findViewById(R.id.textView_TimerCounter_millis)
 
-        displayedResultDate = findViewById(R.id.textView_date_result)
+/*        displayedResultDate = findViewById(R.id.textView_date_result)
         displayedResultTime = findViewById(R.id.textView_time_result)
-        displayedResult = findViewById(R.id.textView_timer_result)
+        displayedResult = findViewById(R.id.textView_timer_result)*/
 
         displayedLatitude = findViewById(R.id.textView_GPS_latitude)
         displayedLongitude = findViewById(R.id.textView_GPS_longitude)
@@ -210,9 +212,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showResult (result: String) {
-        displayedResult?.setText(result)
+/*        displayedResult?.setText(result)
         displayedResultDate?.setText(dateFormatter.format(Date()))
-        displayedResultTime?.setText(timeFormatter.format(Date()))
+        displayedResultTime?.setText(timeFormatter.format(Date()))*/
     }
 
     fun initBtnReady() {

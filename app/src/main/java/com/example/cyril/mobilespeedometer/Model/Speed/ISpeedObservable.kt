@@ -1,4 +1,4 @@
-package com.example.cyril.mobilespeedometer.Model
+package com.example.cyril.mobilespeedometer.Model.Speed
 
 import com.example.cyril.mobilespeedometer.MainPresenter
 

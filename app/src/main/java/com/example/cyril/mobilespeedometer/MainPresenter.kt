@@ -1,10 +1,9 @@
 package com.example.cyril.mobilespeedometer
 
-import android.location.LocationManager
 import com.example.cyril.mobilespeedometer.Navi.GPSLocationListener
 import com.example.cyril.mobilespeedometer.Navi.IGPSObserver
-import com.example.cyril.mobilespeedometer.Model.ISpeedObserver
-import com.example.cyril.mobilespeedometer.Model.SpeedHelper
+import com.example.cyril.mobilespeedometer.Model.Speed.ISpeedObserver
+import com.example.cyril.mobilespeedometer.Model.Speed.SpeedHelper
 import java.text.DecimalFormat
 
 class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSObserver {
