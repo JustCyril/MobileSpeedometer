@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.location.LocationManager
 import android.support.v7.app.AlertDialog
 import android.widget.*
+import com.example.cyril.mobilespeedometer.Adapter.ListResultsAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
-import android.support.v7.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
     var displayedDate : TextView? = null
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 /*    var displayedResultDate : TextView? = null
     var displayedResultTime : TextView? = null
     var displayedResult : TextView? = null*/
-    lateinit var recViewResults: RecyclerView? = null
+    var displayedResults: ListView? = null
 
     var btnReady : Button? = null
 
@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
 /*        displayedResultDate = findViewById(R.id.textView_date_result)
         displayedResultTime = findViewById(R.id.textView_time_result)
         displayedResult = findViewById(R.id.textView_timer_result)*/
+        displayedResults = findViewById(R.id.listview_results)
 
         displayedLatitude = findViewById(R.id.textView_GPS_latitude)
         displayedLongitude = findViewById(R.id.textView_GPS_longitude)
@@ -192,7 +193,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendResult() {
-        presenter.saveResult(secs, centisecs)
+        val date = dateFormatter.format(Date())
+        val time = timeFormatter.format(Date())
+        presenter.saveResult(date, time, secs, centisecs)
     }
 
     fun onTimerTick(){
@@ -229,6 +232,10 @@ class MainActivity : AppCompatActivity() {
 
     fun onStopRaceClick() {
         presenter.stopRace()
+    }
+
+    fun refreshListResult(adapter: ListResultsAdapter) {
+        displayedResults?.adapter = adapter
     }
 
 }

@@ -6,7 +6,7 @@ import com.example.cyril.mobilespeedometer.Model.Speed.Speed
 
 class SpeedHelper () : ISpeedObservable {
 
-    private  var speed = Speed(0);
+    private var speed = Speed(0);
     private var observer: MainPresenter? = null
 
     init {

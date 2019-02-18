@@ -1,15 +1,21 @@
 package com.example.cyril.mobilespeedometer
 
+import com.example.cyril.mobilespeedometer.Adapter.ListResultsAdapter
+import com.example.cyril.mobilespeedometer.DBHelper.DBHelper
+import com.example.cyril.mobilespeedometer.DBHelper.IDBObserver
+import com.example.cyril.mobilespeedometer.Model.Result.Result
 import com.example.cyril.mobilespeedometer.Navi.GPSLocationListener
 import com.example.cyril.mobilespeedometer.Navi.IGPSObserver
 import com.example.cyril.mobilespeedometer.Model.Speed.ISpeedObserver
 import com.example.cyril.mobilespeedometer.Model.Speed.SpeedHelper
 import java.text.DecimalFormat
 
-class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSObserver {
+class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSObserver, IDBObserver {
 
-    private var speedHelper = SpeedHelper()
+    var speedHelper = SpeedHelper()
     var locationListener = GPSLocationListener()
+    var dbHelper = DBHelper(activity)
+    var listResults: List<Result> = ArrayList<Result>()
 
     var readyToRace = false
     var inRace = false
@@ -20,6 +26,7 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
 
         this.locationListener = locationListener
         locationListener.registerObserver(this)
+
     }
     override fun onLocationChange() {
         changeSpeed(locationListener.location.speed.toInt())
@@ -93,9 +100,9 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         activity.StopTimer()
     }
 
-    fun saveResult (secs: Int, decisecs: Int) {
-        val result = "$secs:$decisecs"
-        activity.showResult(result)
+    fun saveResult (date: String, time: String, secs: Int, decisecs: Int) {
+        val result = Result(0, date, time, "$secs : $decisecs")
+        dbHelper.addResult(result)
     }
 
     fun initBtnReadyAgain() {
@@ -104,6 +111,17 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
 
     fun getResult() {
         activity.sendResult()
+    }
+
+    fun refreshListResult() {
+        listResults = dbHelper.allResults
+        //или в активити передавать listResults?... Но тогда она узнает о данных типа Result
+        val adapter = ListResultsAdapter(activity, listResults)
+        activity.refreshListResult(adapter)
+    }
+
+    override fun onDBUpdated() {
+        refreshListResult()
     }
 
 

@@ -4,9 +4,16 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.cyril.mobilespeedometer.MainPresenter
 import com.example.cyril.mobilespeedometer.Model.Result.Result
 
-class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VER) {
+class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VER), IDBObservable {
+
+    private var observer: MainPresenter? = null
+
+    init {
+        this.observer = observer
+    }
 
     companion object {
         private val DATABASE_VER = 1
@@ -21,7 +28,7 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val CREATE_TABLE_QUERY = ("CREATE TABLE $TABLE_NAME($COL_ID INTEGER PRIMARY KEY, $COL_DATE TEXT, $COL_TIME TEXT, $COL_RESULT_TIME TEXT)")
+        val CREATE_TABLE_QUERY = ("CREATE TABLE $TABLE_NAME($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_DATE TEXT, $COL_TIME TEXT, $COL_RESULT_TIME TEXT)")
 
         db?.execSQL(CREATE_TABLE_QUERY)
     }
@@ -30,6 +37,18 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)
 
+    }
+
+    override fun registerObserver(o: MainPresenter) {
+        observer = o
+    }
+
+    override fun removeObserver(o: MainPresenter) {
+        observer = null
+    }
+
+    override fun notifyObservers() {
+        observer?.onDBUpdated()
     }
 
     //CRUD
@@ -58,13 +77,13 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
     fun addResult(result: Result) {
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(COL_ID, result.id)
         values.put(COL_DATE, result.date)
         values.put(COL_TIME, result.time)
         values.put(COL_RESULT_TIME, result.resultTime)
 
         db.insert(TABLE_NAME, null, values)
         db.close()
+        notifyObservers()
     }
 
     //fun updateResult(result: Result) {}
@@ -75,7 +94,13 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
 
         db.delete(TABLE_NAME, "$COL_ID = ?", arrayOf(result.id.toString()))
         db.close()
+        notifyObservers()
     }
+
+    fun getLastId(): Int {
+        return allResults.last().id
+    }
+
 
 
 }
