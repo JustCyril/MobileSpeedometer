@@ -4,24 +4,26 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.location.LocationManager
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.widget.*
-import com.example.cyril.mobilespeedometer.Adapter.ListResultsAdapter
+import com.example.cyril.mobilespeedometer.Adapter.RecViewResultsAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
 
 class MainActivity : AppCompatActivity() {
-    var displayedDate : TextView? = null
+    var txtvw_Date : TextView? = null
     //var displayedTime : TextView? = null
-    var displayedSpeed : TextView? = null
-    var displayedCounterSeconds : TextView? = null
-    var displayedCounterMillis : TextView? = null
-    var displayedGPSStatus : TextView? = null
+    var txtvw_Speed : TextView? = null
+    var txtvw_CounterSeconds : TextView? = null
+    var txtvw_CounterMillis : TextView? = null
+    var txtvw_GPSStatus : TextView? = null
 
 /*    var displayedResultDate : TextView? = null
     var displayedResultTime : TextView? = null
     var displayedResult : TextView? = null*/
-    var displayedResults: ListView? = null
+    lateinit var recview_Results : RecyclerView
 
     var btnReady : Button? = null
 
@@ -34,8 +36,8 @@ class MainActivity : AppCompatActivity() {
     var decisecs = 0 //tried to use millis, but there was a huge gape between real time and showed timer (suppose, because of frequent textView redrawing)
     var secs = 0
 
-    var displayedLatitude : TextView? = null
-    var displayedLongitude : TextView? = null
+    var txtvw_Latitude : TextView? = null
+    var txtvw_Longitude : TextView? = null
 
     lateinit var presenter : MainPresenter
     var locationManager : LocationManager? = null
@@ -57,22 +59,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        displayedGPSStatus = findViewById(R.id.textView_GPS_status)
-        displayedDate = findViewById(R.id.textView_Date)
+        txtvw_GPSStatus = findViewById(R.id.textView_GPS_status)
+        txtvw_Date = findViewById(R.id.textView_Date)
         setCurrentDate()
         //displayedTime = findViewById(R.id.textView_time)
         //setCurrentTime()
-        displayedSpeed = findViewById(R.id.textView_CurrentSpeed)
-        displayedCounterSeconds = findViewById(R.id.textView_TimerCounter_seconds)
-        displayedCounterMillis = findViewById(R.id.textView_TimerCounter_millis)
+
+        txtvw_Speed = findViewById(R.id.textView_CurrentSpeed)
+        txtvw_CounterSeconds = findViewById(R.id.textView_TimerCounter_seconds)
+        txtvw_CounterMillis = findViewById(R.id.textView_TimerCounter_millis)
 
 /*        displayedResultDate = findViewById(R.id.textView_date_result)
         displayedResultTime = findViewById(R.id.textView_time_result)
         displayedResult = findViewById(R.id.textView_timer_result)*/
-        displayedResults = findViewById(R.id.listview_results)
 
-        displayedLatitude = findViewById(R.id.textView_GPS_latitude)
-        displayedLongitude = findViewById(R.id.textView_GPS_longitude)
+        recview_Results = findViewById(R.id.recview_results)
+        recview_Results.layoutManager = LinearLayoutManager(this)
+
+        txtvw_Latitude = findViewById(R.id.textView_GPS_latitude)
+        txtvw_Longitude = findViewById(R.id.textView_GPS_longitude)
 
 /*        btnStart = findViewById(R.id.btn_Start)
         btnStart?.setOnClickListener { onStartClick() }
@@ -86,6 +91,7 @@ class MainActivity : AppCompatActivity() {
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         presenter = MainPresenter(this)
+        presenter.refreshListResult()
 
         if (UtilsPermissions(this).checkSelfPermission(this)) {
             employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
@@ -104,15 +110,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun changeGPSStatus(status : String) {
-        displayedGPSStatus?.setText(status)
+        txtvw_GPSStatus?.setText(status)
     }
 
     fun changeDisplayedSpeed(speed : Int) {
-        displayedSpeed?.setText(speed.toString())
+        txtvw_Speed?.setText(speed.toString())
     }
 
     fun setCurrentDate(){
-        displayedDate?.setText(dateFormatter.format(Date()))
+        txtvw_Date?.setText(dateFormatter.format(Date()))
     }
 
 /*    fun setCurrentTime() {
@@ -126,7 +132,7 @@ class MainActivity : AppCompatActivity() {
     fun readyToRace(): Boolean {
         //if car is moving, user will receive a warning message
         //and var readyToRace in the presenter will not be changed
-       if (displayedSpeed?.text.toString().toInt() > 2) {
+       if (txtvw_Speed?.text.toString().toInt() > 2) {
             AlertDialog.Builder(this)
                 .setTitle("Ошибка!")
                 .setMessage("Автомобиль в движении! Пожалуйста, остановитесь полностью!")
@@ -154,8 +160,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun changeDisplayedCoordinates (lat: String, long: String) {
-        displayedLatitude?.setText(lat)
-        displayedLongitude?.setText(long)
+        txtvw_Latitude?.setText(lat)
+        txtvw_Longitude?.setText(long)
     }
 
 /*    fun onStartClick() {
@@ -171,8 +177,8 @@ class MainActivity : AppCompatActivity() {
 
     fun initTimer() {
         timer = Timer() //возможно это костыль, но я не понял, как грамотно остановить таймер, инициализированный ранее. cancel() убивал его, schedule({cancel()}) тоже убивал... иных методов при гуглеже не нашел
-        displayedCounterMillis?.setText(decisecs.toString())
-        displayedCounterSeconds?.setText(secs.toString())
+        txtvw_CounterMillis?.setText(decisecs.toString())
+        txtvw_CounterSeconds?.setText(secs.toString())
     }
 
     fun StartTimer() {
@@ -206,19 +212,19 @@ class MainActivity : AppCompatActivity() {
             decisecs = centisecs/10
             if (decisecs == 10) {
                 secs++
-                displayedCounterSeconds?.setText(secs.toString())
+                txtvw_CounterSeconds?.setText(secs.toString())
                 decisecs = 0
                 centisecs = 0
             }
-            displayedCounterMillis?.setText(decisecs.toString())
+            txtvw_CounterMillis?.setText(decisecs.toString())
         }
     }
 
-    fun showResult (result: String) {
-/*        displayedResult?.setText(result)
+/*    fun showResult (result: String) {
+        displayedResult?.setText(result)
         displayedResultDate?.setText(dateFormatter.format(Date()))
-        displayedResultTime?.setText(timeFormatter.format(Date()))*/
-    }
+        displayedResultTime?.setText(timeFormatter.format(Date()))
+    }*/
 
     fun initBtnReady() {
         btnReady?.text = getString(R.string.btn_ready_to_race)
@@ -234,8 +240,8 @@ class MainActivity : AppCompatActivity() {
         presenter.stopRace()
     }
 
-    fun refreshListResult(adapter: ListResultsAdapter) {
-        displayedResults?.adapter = adapter
+    fun refreshListResult(adapter: RecViewResultsAdapter) {
+        recview_Results?.adapter = adapter
     }
 
 }

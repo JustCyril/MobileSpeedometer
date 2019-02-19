@@ -1,6 +1,6 @@
 package com.example.cyril.mobilespeedometer
 
-import com.example.cyril.mobilespeedometer.Adapter.ListResultsAdapter
+import com.example.cyril.mobilespeedometer.Adapter.RecViewResultsAdapter
 import com.example.cyril.mobilespeedometer.DBHelper.DBHelper
 import com.example.cyril.mobilespeedometer.DBHelper.IDBObserver
 import com.example.cyril.mobilespeedometer.Model.Result.Result
@@ -22,12 +22,16 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
 
     init {
         this.speedHelper = speedHelper
-        speedHelper.registerObserver(this)
-
         this.locationListener = locationListener
-        locationListener.registerObserver(this)
-
+        regAsObserver()
     }
+
+    fun regAsObserver() {
+        speedHelper.registerObserver(this)
+        locationListener.registerObserver(this)
+        dbHelper.registerObserver(this)
+    }
+
     override fun onLocationChange() {
         changeSpeed(locationListener.location.speed.toInt())
         changeCorrdinates(locationListener.location.latitude, locationListener.location.longitude)
@@ -114,9 +118,9 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
     }
 
     fun refreshListResult() {
-        listResults = dbHelper.allResults
+        listResults = dbHelper.getAll()
         //или в активити передавать listResults?... Но тогда она узнает о данных типа Result
-        val adapter = ListResultsAdapter(activity, listResults)
+        val adapter = RecViewResultsAdapter(listResults)
         activity.refreshListResult(adapter)
     }
 

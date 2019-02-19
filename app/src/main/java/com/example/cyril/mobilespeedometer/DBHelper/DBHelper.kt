@@ -51,28 +51,26 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
         observer?.onDBUpdated()
     }
 
-    //CRUD
-    val allResults: List<Result>
-        get() {
-            val listResults = ArrayList<Result>()
-            val selectQuery = "SELECT * FROM $TABLE_NAME"
-            val db = this.writableDatabase
-            val cursor = db.rawQuery(selectQuery, null)
-            if (cursor.moveToFirst())
-            {
-                do {
-                    val result = Result()
-                    result.id = cursor.getInt(cursor.getColumnIndex(COL_ID))
-                    result.date = cursor.getString(cursor.getColumnIndex(COL_DATE))
-                    result.time = cursor.getString(cursor.getColumnIndex(COL_TIME))
-                    result.resultTime = cursor.getString(cursor.getColumnIndex(COL_RESULT_TIME))
+    fun getAll():List<Result> {
+        val listResults = ArrayList<Result>()
+        val selectQuery = "SELECT * FROM $TABLE_NAME"
+        val db = this.writableDatabase
+        val cursor = db.rawQuery(selectQuery, null)
+        if (cursor.moveToFirst())
+        {
+            do {
+                val result = Result()
+                result.id = cursor.getInt(cursor.getColumnIndex(COL_ID))
+                result.date = cursor.getString(cursor.getColumnIndex(COL_DATE))
+                result.time = cursor.getString(cursor.getColumnIndex(COL_TIME))
+                result.resultTime = cursor.getString(cursor.getColumnIndex(COL_RESULT_TIME))
 
-                    listResults.add(result)
-                } while (cursor.moveToNext())
-            }
-            db.close()
-            return listResults
+                listResults.add(result)
+            } while (cursor.moveToNext())
         }
+        db.close()
+        return listResults
+    }
 
     fun addResult(result: Result) {
         val db = this.writableDatabase
@@ -97,9 +95,9 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
         notifyObservers()
     }
 
-    fun getLastId(): Int {
+/*    fun getLastId(): Int {
         return allResults.last().id
-    }
+    }*/
 
 
 
