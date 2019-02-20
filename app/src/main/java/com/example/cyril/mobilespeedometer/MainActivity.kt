@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     var btnStop: Button? = null*/
 
     var timer: Timer? = null
+    var isTimerRunning = false
     var centisecs = 0
     var decisecs = 0 //tried to use millis, but there was a huge gape between real time and showed timer (suppose, because of frequent textView redrawing)
     var secs = 0
@@ -182,6 +183,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun StartTimer() {
+        isTimerRunning = true
 
         timer?.schedule(0, 10) {
             runOnUiThread({
@@ -196,6 +198,7 @@ class MainActivity : AppCompatActivity() {
         centisecs = 0
         decisecs = 0
         secs = 0
+        isTimerRunning = false
     }
 
     fun sendResult() {
@@ -206,7 +209,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onTimerTick(){
         //there is so huge gape between real timer and this logic :(
-        //first idea: use timer period 100, not 10. And work without centisecs. But accuracy is low :(
+        //first idea: use timer period 100, not 10. And work without centisecs. But time accuracy is low :(
         centisecs++
         if (centisecs%10 == 0) {
             decisecs = centisecs/10
@@ -242,6 +245,18 @@ class MainActivity : AppCompatActivity() {
 
     fun refreshListResult(adapter: RecViewResultsAdapter) {
         recview_Results?.adapter = adapter
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.putInt("centisecs", centisecs)
+        outState?.putInt("secs", secs)
+
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
     }
 
 }

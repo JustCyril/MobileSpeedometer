@@ -7,14 +7,14 @@
     <string name="speed_unit">КМ/Ч</string>
     <string name="timer_title">Секундомер:</string>
     <string name="timer_mask">0:0</string>
-    <string name="timer_mask_seconds">0</string>
+    <string name="timer_mask_seconds">100</string>
     <string name="timer_mask_divider">:</string>
     <string name="timer_mask_millis">0</string>
     <string name="timer_unit">СЕК</string>
     <string name="btn_ready_to_race">READY</string>
     <string name="btn_stop_race">STOP</string>
     <string name="results_title">Результаты последнего замера</string>
-    <string name="res_column_titles">Дата; время; время 0-100</string>
+    <string name="res_column_titles">Дата; время; время 0—100</string>
     <string name="status_Disabled">Disabled</string>
     <string name="GPS_status_title">Статус GPS:</string>
     <string name="currentCoord_title">Текущие координаты</string>

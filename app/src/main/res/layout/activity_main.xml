@@ -131,7 +131,7 @@
     </TextView>
     <TextView
             android:id="@+id/textView_TimerCounter_seconds"
-            android:layout_width="20dp"
+            android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:text="@string/timer_mask_seconds"
             android:gravity="right"
