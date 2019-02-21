@@ -14,27 +14,21 @@ import kotlin.concurrent.schedule
 
 class MainActivity : AppCompatActivity() {
     var txtvw_Date : TextView? = null
-    //var displayedTime : TextView? = null
     var txtvw_Speed : TextView? = null
     var txtvw_CounterSeconds : TextView? = null
     var txtvw_CounterMillis : TextView? = null
     var txtvw_GPSStatus : TextView? = null
 
-/*    var displayedResultDate : TextView? = null
-    var displayedResultTime : TextView? = null
-    var displayedResult : TextView? = null*/
     lateinit var recview_Results : RecyclerView
 
     var btnReady : Button? = null
 
-/*    var chrono: Chronometer? = null
-    var btnStart : Button? = null
-    var btnStop: Button? = null*/
-
     var timer: Timer? = null
     var isTimerRunning = false
+
+    //tried to use millis, but there was a huge gape between real time and showed timer (suppose, because of frequent textView redrawing
     var centisecs = 0
-    var decisecs = 0 //tried to use millis, but there was a huge gape between real time and showed timer (suppose, because of frequent textView redrawing)
+    var decisecs = 0
     var secs = 0
 
     var txtvw_Latitude : TextView? = null
@@ -54,6 +48,17 @@ class MainActivity : AppCompatActivity() {
     val dateFormatter = SimpleDateFormat("dd-MM-yyyy")
     val timeFormatter = SimpleDateFormat("HH:mm")
 
+    /*----------- LEGACY-vars ---------------------------------
+        var displayedTime : TextView? = null
+        var displayedResultDate : TextView? = null
+        var displayedResultTime : TextView? = null
+        var displayedResult : TextView? = null
+
+        var chrono: Chronometer? = null
+        var btnStart : Button? = null
+        var btnStop: Button? = null
+    --------------------------------------------------------*/
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,16 +68,10 @@ class MainActivity : AppCompatActivity() {
         txtvw_GPSStatus = findViewById(R.id.textView_GPS_status)
         txtvw_Date = findViewById(R.id.textView_Date)
         setCurrentDate()
-        //displayedTime = findViewById(R.id.textView_time)
-        //setCurrentTime()
 
         txtvw_Speed = findViewById(R.id.textView_CurrentSpeed)
         txtvw_CounterSeconds = findViewById(R.id.textView_TimerCounter_seconds)
         txtvw_CounterMillis = findViewById(R.id.textView_TimerCounter_millis)
-
-/*        displayedResultDate = findViewById(R.id.textView_date_result)
-        displayedResultTime = findViewById(R.id.textView_time_result)
-        displayedResult = findViewById(R.id.textView_timer_result)*/
 
         recview_Results = findViewById(R.id.recview_results)
         recview_Results.layoutManager = LinearLayoutManager(this)
@@ -80,15 +79,7 @@ class MainActivity : AppCompatActivity() {
         txtvw_Latitude = findViewById(R.id.textView_GPS_latitude)
         txtvw_Longitude = findViewById(R.id.textView_GPS_longitude)
 
-/*        btnStart = findViewById(R.id.btn_Start)
-        btnStart?.setOnClickListener { onStartClick() }
-        btnStop = findViewById(R.id.btn_Stop)
-        btnStop?.setOnClickListener { onStopClick() }
-        chrono = findViewById(R.id.chronometer)*/
-
         btnReady = findViewById(R.id.btn_ready_to_measure)
-        initBtnReady()
-
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
         presenter = MainPresenter(this)
@@ -98,11 +89,41 @@ class MainActivity : AppCompatActivity() {
             employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
         }
 
+
+        /* ----------- LEGACY-init---------------------------------
+
+        displayedTime = findViewById(R.id.textView_time)
+        setCurrentTime()
+
+        displayedResultDate = findViewById(R.id.textView_date_result)
+        displayedResultTime = findViewById(R.id.textView_time_result)
+        displayedResult = findViewById(R.id.textView_timer_result)
+
+        btnStart = findViewById(R.id.btn_Start)
+        btnStart?.setOnClickListener { onStartClick() }
+        btnStop = findViewById(R.id.btn_Stop)
+        btnStop?.setOnClickListener { onStopClick() }
+        chrono = findViewById(R.id.chronometer)
+
+         ------------------------------------------------------*/
+
     }
+
 
     override fun onResume(){
         super.onResume()
-        employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
+
+        //If there is a rotation when timer is running, activity will restore data
+        //during onRestoreInstanceState(), and here time measuring will be continue
+        if (isTimerRunning) {
+            presenter.initRaceView()
+            presenter.continueRace()
+            employLocationManager(FAST_INTERVAL, SHORT_DISTANCE)
+
+        } else {
+            presenter.initCommonView()
+            employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
+        }
     }
 
     override fun onPause() {
@@ -121,10 +142,6 @@ class MainActivity : AppCompatActivity() {
     fun setCurrentDate(){
         txtvw_Date?.setText(dateFormatter.format(Date()))
     }
-
-/*    fun setCurrentTime() {
-        //there will be smt to set real-time in app. Don`t know what it will be yet.
-    }*/
 
     fun onReadyToRaceClick() {
         presenter.readyToRace()
@@ -165,21 +182,9 @@ class MainActivity : AppCompatActivity() {
         txtvw_Longitude?.setText(long)
     }
 
-/*    fun onStartClick() {
-        chrono?.setBase(SystemClock.elapsedRealtime())
-        chrono?.start()
-        presenter.StartTimer()
-    }
-
-    fun onStopClick() {
-        chrono?.stop()
-        presenter.StopTimer()
-    }*/
 
     fun initTimer() {
         timer = Timer() //возможно это костыль, но я не понял, как грамотно остановить таймер, инициализированный ранее. cancel() убивал его, schedule({cancel()}) тоже убивал... иных методов при гуглеже не нашел
-        txtvw_CounterMillis?.setText(decisecs.toString())
-        txtvw_CounterSeconds?.setText(secs.toString())
     }
 
     fun StartTimer() {
@@ -223,11 +228,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-/*    fun showResult (result: String) {
-        displayedResult?.setText(result)
-        displayedResultDate?.setText(dateFormatter.format(Date()))
-        displayedResultTime?.setText(timeFormatter.format(Date()))
-    }*/
+
+    fun initCommonView() {
+        initBtnReady()
+        setTimerStateText()
+    }
+
+    fun initRaceView() {
+        transformBtnReadyToStop()
+        setTimerStateText()
+    }
+
+    fun setTimerStateText() {
+        txtvw_CounterMillis?.setText(decisecs.toString())
+        txtvw_CounterSeconds?.setText(secs.toString())
+    }
 
     fun initBtnReady() {
         btnReady?.text = getString(R.string.btn_ready_to_race)
@@ -249,14 +264,48 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-
         outState?.putInt("centisecs", centisecs)
         outState?.putInt("secs", secs)
+        outState?.putBoolean("isTimerRunning", isTimerRunning)
 
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
+    override fun onRestoreInstanceState(savedState: Bundle?) {
+        super.onRestoreInstanceState(savedState)
+
+        //проверка, потому что иначе жалуется на Int? вместо Int
+        if (savedState != null) {
+            centisecs = savedState.getInt("centisecs")
+            secs = savedState.getInt("secs")
+            isTimerRunning = savedState.getBoolean("isTimerRunning")
+        }
+
     }
 
 }
+    /* ----------- LEGACY-methods ---------------------------------
+
+    fun setCurrentTime() {
+        //there will be smt to set real-time in app. Don`t know what it will be yet.
+    }
+
+    fun onStartClick() {
+        chrono?.setBase(SystemClock.elapsedRealtime())
+        chrono?.start()
+        presenter.StartTimer()
+    }
+
+    fun onStopClick() {
+        chrono?.stop()
+        presenter.StopTimer()
+    }
+
+
+    fun showResult (result: String) {
+        displayedResult?.setText(result)
+        displayedResultDate?.setText(dateFormatter.format(Date()))
+        displayedResultTime?.setText(timeFormatter.format(Date()))
+    }
+     ------------------------------------------------------------*/
+
+

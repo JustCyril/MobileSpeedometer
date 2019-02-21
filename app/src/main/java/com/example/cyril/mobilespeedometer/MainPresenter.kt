@@ -12,13 +12,13 @@ import java.text.DecimalFormat
 
 class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSObserver, IDBObserver {
 
-    var speedHelper = SpeedHelper()
-    var locationListener = GPSLocationListener()
-    var dbHelper = DBHelper(activity)
-    var listResults: List<Result> = ArrayList<Result>()
+    private var speedHelper = SpeedHelper()
+    var locationListener = GPSLocationListener() //not private because of activity location updates request
+    private var dbHelper = DBHelper(activity)
+    private var listResults: List<Result> = ArrayList<Result>()
 
-    var readyToRace = false
-    var inRace = false
+    private var readyToRace = false
+    private var inRace = false
 
     init {
         this.speedHelper = speedHelper
@@ -26,7 +26,7 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         regAsObserver()
     }
 
-    fun regAsObserver() {
+    private fun regAsObserver() {
         speedHelper.registerObserver(this)
         locationListener.registerObserver(this)
         dbHelper.registerObserver(this)
@@ -42,10 +42,12 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
     }
 
     override fun onProviderStatusChange(status : String) {
-        activity.changeGPSStatus(status)
+        //there is some problem: when phone is rotating, provider status become "disabled",
+        //but everything is still working. So, just skip this action until problem will be solved
+        //activity.changeGPSStatus(status)
     }
 
-    fun changeSpeed (incomeSpeed: Int) {
+    private fun changeSpeed (incomeSpeed: Int) {
         speedHelper.setSpeed(incomeSpeed*3600/1000)//speed is in km/h
     }
 
@@ -57,17 +59,20 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
     fun readyToRace() {
         if (activity.readyToRace()) {
             readyToRace = true
-            transformBtnReadyToStop()
+            initRaceView()
         }
     }
 
-    fun transformBtnReadyToStop() {
-        activity.transformBtnReadyToStop()
-    }
 
     fun stopRace() {
         StopTimer()
-        initBtnReadyAgain()
+        initCommonView()
+    }
+
+    fun continueRace() {
+        activity.initTimer()
+        activity.StartTimer()
+        inRace = true
     }
 
     override fun onSpeedChange(newSpeed: Int) {
@@ -109,10 +114,6 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         dbHelper.addResult(result)
     }
 
-    fun initBtnReadyAgain() {
-        activity.initBtnReady()
-    }
-
     fun getResult() {
         activity.sendResult()
     }
@@ -126,6 +127,14 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
 
     override fun onDBUpdated() {
         refreshListResult()
+    }
+
+    fun initCommonView() {
+        activity.initCommonView()
+    }
+
+    fun initRaceView() {
+        activity.initRaceView()
     }
 
 
