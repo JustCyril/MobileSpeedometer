@@ -15,7 +15,7 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
     private var speedHelper = SpeedHelper()
     var locationListener = GPSLocationListener() //not private because of activity location updates request
     private var dbHelper = DBHelper(activity)
-    private var listResults: List<Result> = ArrayList<Result>()
+    //private var listResults: List<Result> = ArrayList<Result>()
 
     private var readyToRace = false
     private var inRace = false
@@ -31,6 +31,8 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         locationListener.registerObserver(this)
         dbHelper.registerObserver(this)
     }
+
+    // ---- Observer-actions --------
 
     override fun onLocationChange() {
         changeSpeed(locationListener.location.speed.toInt())
@@ -56,39 +58,20 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
     //... да и вообще Speed должна быть "слушателем" навигации. Как только изменилось что-то, в ней меняются
     //данные, а она уже рассылает всем уведомления
 
-    fun readyToRace() {
-        if (activity.readyToRace()) {
-            readyToRace = true
-            initRaceView()
-        }
-    }
-
-
-    fun stopRace() {
-        StopTimer()
-        initCommonView()
-    }
-
-    fun continueRace() {
-        activity.initTimer()
-        activity.StartTimer()
-        inRace = true
-    }
-
     override fun onSpeedChange(newSpeed: Int) {
         //we get speed in km/h from model because changeSpeed-fun above set speed after calculation
 
         activity.changeDisplayedSpeed(newSpeed)
 
         if (readyToRace) {
-            if (newSpeed > 2) {
+            if (newSpeed > 1) {
                 inRace = true
                 readyToRace = false
                 StartTimer()
             }
         }
         if (inRace) {
-            if (newSpeed > 100) {
+            if (newSpeed >= 100) {
                 getResult()
                 stopRace()
                 inRace = false
@@ -96,9 +79,51 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         }
     }
 
-    fun changeCorrdinates(lat: Double, long: Double) {
+    private fun changeCorrdinates(lat: Double, long: Double) {
         val formatter = DecimalFormat("0.####")
         activity.changeDisplayedCoordinates(formatter.format(lat), formatter.format(long))
+    }
+
+    // ---- VIEW and its events -----
+
+    fun initCommonView() {
+        activity.initCommonView()
+    }
+
+    fun initRaceView() {
+        activity.initRaceView()
+    }
+
+    fun onBtnReadyClick() {
+        readyToRace()
+    }
+
+    fun onBtnStopClick() {
+        stopRace()
+    }
+
+    fun continueRace() {
+        initTimer()
+        StartTimer()
+        inRace = true
+    }
+
+    // ---- RACE LOGIC --------
+
+    private fun readyToRace() {
+        if (activity.readyToRace()) {
+            readyToRace = true
+            initRaceView()
+        }
+    }
+
+    private fun stopRace() {
+        StopTimer()
+        initCommonView()
+    }
+
+    fun initTimer() {
+        activity.initTimer()
     }
 
     fun StartTimer() {
@@ -109,34 +134,31 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         activity.StopTimer()
     }
 
-    fun saveResult (date: String, time: String, secs: Int, decisecs: Int) {
-        val result = Result(0, date, time, "$secs : $decisecs")
-        dbHelper.addResult(result)
-    }
+    // ---- DB and result saving --------
 
     fun getResult() {
         activity.sendResult()
     }
 
-    fun refreshListResult() {
-        listResults = dbHelper.getAll()
-        //или в активити передавать listResults?... Но тогда она узнает о данных типа Result
-        val adapter = RecViewResultsAdapter(listResults)
-        activity.refreshListResult(adapter)
+    fun saveResult (date: String, time: String, secs: Int, centisecs: Int) {
+        var result = Result()
+        if (centisecs<=9) {
+            val cent = "0$centisecs"
+            result = Result(0, date, time, "$secs : $cent")
+        } else { result = Result(0, date, time, "$secs : $centisecs") }
+        dbHelper.addResult(result)
     }
 
     override fun onDBUpdated() {
         refreshListResult()
     }
 
-    fun initCommonView() {
-        activity.initCommonView()
+    fun refreshListResult() {
+        val listResults = dbHelper.getAll()
+        //или в активити передавать listResults?... Но тогда она узнает о данных типа Result
+        val adapter = RecViewResultsAdapter(listResults)
+        activity.refreshListResult(adapter)
     }
-
-    fun initRaceView() {
-        activity.initRaceView()
-    }
-
 
 }
 

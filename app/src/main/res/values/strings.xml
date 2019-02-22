@@ -15,7 +15,7 @@
     <string name="btn_stop_race">STOP</string>
     <string name="results_title">Результаты последнего замера</string>
     <string name="res_column_titles">Дата; время; время 0—100</string>
-    <string name="status_Disabled">Disabled</string>
+    <string name="status_Disabled">OK</string>
     <string name="GPS_status_title">Статус GPS:</string>
     <string name="currentCoord_title">Текущие координаты</string>
     <string name="coordinate_mask">00.0000</string>
