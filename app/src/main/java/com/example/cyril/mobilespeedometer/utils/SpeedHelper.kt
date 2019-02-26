@@ -1,8 +1,8 @@
-package com.example.cyril.mobilespeedometer.Model.Speed
+package com.example.cyril.mobilespeedometer.utils
 
-import com.example.cyril.mobilespeedometer.MainPresenter
-import com.example.cyril.mobilespeedometer.Model.Speed.ISpeedObservable
-import com.example.cyril.mobilespeedometer.Model.Speed.Speed
+import com.example.cyril.mobilespeedometer.main.MainPresenter
+import com.example.cyril.mobilespeedometer.observers.ISpeedObservable
+import com.example.cyril.mobilespeedometer.model.Speed
 
 class SpeedHelper () : ISpeedObservable {
 

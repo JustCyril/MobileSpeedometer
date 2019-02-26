@@ -1,5 +1,6 @@
-package com.example.cyril.mobilespeedometer
+package com.example.cyril.mobilespeedometer.main
 
+import android.annotation.SuppressLint
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.location.LocationManager
@@ -7,7 +8,18 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.*
-import com.example.cyril.mobilespeedometer.Adapter.RecViewResultsAdapter
+import com.example.cyril.mobilespeedometer.Config.Companion.FAST_INTERVAL
+import com.example.cyril.mobilespeedometer.Config.Companion.LONG_DISTANCE
+import com.example.cyril.mobilespeedometer.Config.Companion.SHORT_DISTANCE
+import com.example.cyril.mobilespeedometer.Config.Companion.SLOW_INTERVAL
+import com.example.cyril.mobilespeedometer.Config.Companion.dateFormatter
+import com.example.cyril.mobilespeedometer.Config.Companion.timeFormatter
+import com.example.cyril.mobilespeedometer.R
+import com.example.cyril.mobilespeedometer.utils.UtilsPermissions
+import com.example.cyril.mobilespeedometer.adapter.RecViewResultsAdapter
+import com.example.cyril.mobilespeedometer.model.repository.Repository
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
@@ -37,16 +49,6 @@ class MainActivity : AppCompatActivity() {
     private var decisecs = 0
     private var secs = 0
 
-    //update-time for locationManager (how often there will be any update)
-    private val FAST_INTERVAL = 10L
-    private val SLOW_INTERVAL = 1000L
-
-    //update-distance for locationManager (how often there will be any update)
-    private val SHORT_DISTANCE = 1f
-    private val LONG_DISTANCE = 10f
-
-    val dateFormatter = SimpleDateFormat("dd-MM-yyyy")
-    val timeFormatter = SimpleDateFormat("HH:mm")
 
     //---- Presenter and helpers ----
 
@@ -67,8 +69,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+       // Repository.context = this
 
         setContentView(R.layout.activity_main)
 
@@ -95,6 +100,18 @@ class MainActivity : AppCompatActivity() {
         if (UtilsPermissions(this).checkSelfPermission(this)) {
             employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
         }
+
+        Repository(this).helloWorld()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe (
+                {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                },
+                {
+                    Toast.makeText(this, "Что-то пошло не так", Toast.LENGTH_LONG).show()
+                }
+            )
 
 
         /* ----------- LEGACY-init---------------------------------
@@ -141,7 +158,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putInt("centisecs", centisecs)
+        outState?.putInt(getString(R.string.CENTISECS), centisecs)
         outState?.putInt("secs", secs)
         outState?.putBoolean("isTimerRunning", isTimerRunning)
 

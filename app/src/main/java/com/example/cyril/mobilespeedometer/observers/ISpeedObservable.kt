@@ -1,6 +1,6 @@
-package com.example.cyril.mobilespeedometer.Model.Speed
+package com.example.cyril.mobilespeedometer.observers
 
-import com.example.cyril.mobilespeedometer.MainPresenter
+import com.example.cyril.mobilespeedometer.main.MainPresenter
 
 interface ISpeedObservable {
     fun registerObserver(o: MainPresenter)

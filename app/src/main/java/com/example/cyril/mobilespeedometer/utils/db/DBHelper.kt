@@ -1,11 +1,19 @@
-package com.example.cyril.mobilespeedometer.DBHelper
+package com.example.cyril.mobilespeedometer.utils.db
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.cyril.mobilespeedometer.MainPresenter
-import com.example.cyril.mobilespeedometer.Model.Result.Result
+import com.example.cyril.mobilespeedometer.Config.Companion.COL_DATE
+import com.example.cyril.mobilespeedometer.Config.Companion.COL_ID
+import com.example.cyril.mobilespeedometer.Config.Companion.COL_RESULT_TIME
+import com.example.cyril.mobilespeedometer.Config.Companion.COL_TIME
+import com.example.cyril.mobilespeedometer.Config.Companion.DATABASE_NAME
+import com.example.cyril.mobilespeedometer.Config.Companion.DATABASE_VER
+import com.example.cyril.mobilespeedometer.Config.Companion.HELLO
+import com.example.cyril.mobilespeedometer.Config.Companion.TABLE_NAME
+import com.example.cyril.mobilespeedometer.main.MainPresenter
+import com.example.cyril.mobilespeedometer.model.Result
 
 class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VER), IDBObservable {
 
@@ -15,28 +23,14 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
         this.observer = observer
     }
 
-    companion object {
-        private val DATABASE_VER = 1
-        private val DATABASE_NAME =  "RESULTS.db"
-
-        //Table
-        private val TABLE_NAME = "Results"
-        private val COL_ID = "Id"
-        private val COL_DATE = "Date"
-        private val COL_TIME = "Time"
-        private val COL_RESULT_TIME = "ResultTime"
-    }
-
     override fun onCreate(db: SQLiteDatabase?) {
         val CREATE_TABLE_QUERY = ("CREATE TABLE $TABLE_NAME($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_DATE TEXT, $COL_TIME TEXT, $COL_RESULT_TIME TEXT)")
-
         db?.execSQL(CREATE_TABLE_QUERY)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)
-
     }
 
     override fun registerObserver(o: MainPresenter) {
@@ -98,6 +92,11 @@ class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null
 /*    fun getLastId(): Int {
         return allResults.last().id
     }*/
+
+
+    fun getHelloWorld(): String {
+        return HELLO
+    }
 
 
 

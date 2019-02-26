@@ -1,17 +1,12 @@
-package com.example.cyril.mobilespeedometer.Adapter
+package com.example.cyril.mobilespeedometer.adapter
 
-import android.app.Activity
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
-import android.widget.BaseAdapter
 import android.widget.TextView
-import com.example.cyril.mobilespeedometer.Model.Result.Result
+import com.example.cyril.mobilespeedometer.model.Result
 import com.example.cyril.mobilespeedometer.R
-import kotlinx.android.synthetic.main.row_layout.view.*
 
 class RecViewResultsAdapter (private val results: List<Result>): RecyclerView.Adapter<RecViewResultsAdapter.RecViewHolder>() {
 

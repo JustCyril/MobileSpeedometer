@@ -1,16 +1,17 @@
-package com.example.cyril.mobilespeedometer
+package com.example.cyril.mobilespeedometer.main
 
-import com.example.cyril.mobilespeedometer.Adapter.RecViewResultsAdapter
-import com.example.cyril.mobilespeedometer.DBHelper.DBHelper
-import com.example.cyril.mobilespeedometer.DBHelper.IDBObserver
-import com.example.cyril.mobilespeedometer.Model.Result.Result
-import com.example.cyril.mobilespeedometer.Navi.GPSLocationListener
-import com.example.cyril.mobilespeedometer.Navi.IGPSObserver
-import com.example.cyril.mobilespeedometer.Model.Speed.ISpeedObserver
-import com.example.cyril.mobilespeedometer.Model.Speed.SpeedHelper
+import com.example.cyril.mobilespeedometer.adapter.RecViewResultsAdapter
+import com.example.cyril.mobilespeedometer.utils.db.DBHelper
+import com.example.cyril.mobilespeedometer.utils.db.IDBObserver
+import com.example.cyril.mobilespeedometer.model.Result
+import com.example.cyril.mobilespeedometer.utils.navi.GPSLocationListener
+import com.example.cyril.mobilespeedometer.observers.IGPSObserver
+import com.example.cyril.mobilespeedometer.observers.ISpeedObserver
+import com.example.cyril.mobilespeedometer.utils.SpeedHelper
 import java.text.DecimalFormat
 
-class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSObserver, IDBObserver {
+class MainPresenter (private var activity: MainActivity) : ISpeedObserver,
+    IGPSObserver, IDBObserver {
 
     private var speedHelper = SpeedHelper()
     var locationListener = GPSLocationListener() //not private because of activity location updates request
@@ -145,7 +146,8 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver, IGPSO
         if (centisecs<=9) {
             val cent = "0$centisecs"
             result = Result(0, date, time, "$secs : $cent")
-        } else { result = Result(0, date, time, "$secs : $centisecs") }
+        } else { result = Result(0, date, time, "$secs : $centisecs")
+        }
         dbHelper.addResult(result)
     }
 

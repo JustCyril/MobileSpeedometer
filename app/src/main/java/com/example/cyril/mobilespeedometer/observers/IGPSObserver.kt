@@ -1,4 +1,4 @@
-package com.example.cyril.mobilespeedometer.Navi
+package com.example.cyril.mobilespeedometer.observers
 
 
 interface IGPSObserver {

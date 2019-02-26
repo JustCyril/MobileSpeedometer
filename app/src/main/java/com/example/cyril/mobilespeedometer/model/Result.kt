@@ -1,4 +1,4 @@
-package com.example.cyril.mobilespeedometer.Model.Result
+package com.example.cyril.mobilespeedometer.model
 
 class Result {
     var id: Int = 0

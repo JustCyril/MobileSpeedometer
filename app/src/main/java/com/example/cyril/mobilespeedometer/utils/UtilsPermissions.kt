@@ -1,4 +1,4 @@
-package com.example.cyril.mobilespeedometer
+package com.example.cyril.mobilespeedometer.utils
 
 import android.Manifest
 import android.app.Activity
@@ -35,7 +35,9 @@ class UtilsPermissions(context: Activity) {
                 builder.setMessage("Разрешить доступ к геоданным?")
                 builder.setPositiveButton("Да") { dialog, which ->
                     dialog.cancel()
-                    ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CONSTANT)
+                    ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        LOCATION_PERMISSION_CONSTANT
+                    )
                 }
                 builder.setNegativeButton("Нет") { dialog, which -> dialog.cancel() }
                 builder.show()
@@ -51,14 +53,18 @@ class UtilsPermissions(context: Activity) {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     val uri = Uri.fromParts("package", context.packageName, null)
                     intent.data = uri
-                    context.startActivityForResult(intent, REQUEST_PERMISSION_SETTING)
+                    context.startActivityForResult(intent,
+                        REQUEST_PERMISSION_SETTING
+                    )
                     Toast.makeText(context, "Настройки", Toast.LENGTH_LONG).show()
                 }
                 builder.setNegativeButton("Нет") { dialog, which -> dialog.cancel() }
                 builder.show()
             } else {
                 //just request the permission
-                ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CONSTANT)
+                ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_CONSTANT
+                )
             }
 
 
