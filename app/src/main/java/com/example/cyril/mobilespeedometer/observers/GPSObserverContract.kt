@@ -1,7 +1,7 @@
 package com.example.cyril.mobilespeedometer.observers
 
 
-interface IGPSObserver {
+interface GPSObserverContract {
     fun onLocationChange()
 
     fun onGPSStatusChange(status : String)

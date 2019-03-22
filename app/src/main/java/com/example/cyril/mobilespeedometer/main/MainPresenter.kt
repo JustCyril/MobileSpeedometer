@@ -2,16 +2,14 @@ package com.example.cyril.mobilespeedometer.main
 
 import com.example.cyril.mobilespeedometer.adapter.RecViewResultsAdapter
 import com.example.cyril.mobilespeedometer.utils.db.DBHelper
-import com.example.cyril.mobilespeedometer.utils.db.IDBObserver
+import com.example.cyril.mobilespeedometer.utils.db.DBObserverContract
 import com.example.cyril.mobilespeedometer.model.Result
 import com.example.cyril.mobilespeedometer.utils.navi.GPSLocationListener
-import com.example.cyril.mobilespeedometer.observers.IGPSObserver
-import com.example.cyril.mobilespeedometer.observers.ISpeedObserver
+import com.example.cyril.mobilespeedometer.observers.GPSObserverContract
 import com.example.cyril.mobilespeedometer.utils.SpeedHelper
 import java.text.DecimalFormat
 
-class MainPresenter (private var activity: MainActivity) : ISpeedObserver,
-    IGPSObserver, IDBObserver {
+class MainPresenter (private var activity: MainActivity) : GPSObserverContract, DBObserverContract {
 
     private var speedHelper = SpeedHelper()
     var locationListener = GPSLocationListener() //not private because of activity location updates request
@@ -28,7 +26,6 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver,
     }
 
     private fun regAsObserver() {
-        speedHelper.registerObserver(this)
         locationListener.registerObserver(this)
         dbHelper.registerObserver(this)
     }
@@ -52,33 +49,29 @@ class MainPresenter (private var activity: MainActivity) : ISpeedObserver,
 
     private fun changeSpeed (incomeSpeed: Int) {
         speedHelper.setSpeed(incomeSpeed*3600/1000)//speed is in km/h
-    }
 
-    //я полагаю, проще конечно сразу в changeSpeed показать эти данные в активити, но в рамках
-    //учебного процесса пока что разнесем это в разные методы
-    //... да и вообще Speed должна быть "слушателем" навигации. Как только изменилось что-то, в ней меняются
-    //данные, а она уже рассылает всем уведомления
-
-    override fun onSpeedChange(newSpeed: Int) {
-        //we get speed in km/h from model because changeSpeed-fun above set speed after calculation
-
-        activity.changeDisplayedSpeed(newSpeed)
+        activity.changeDisplayedSpeed(incomeSpeed)
 
         if (readyToRace) {
-            if (newSpeed > 1) {
+            if (incomeSpeed > 1) {
                 inRace = true
                 readyToRace = false
                 StartTimer()
             }
         }
         if (inRace) {
-            if (newSpeed >= 100) {
+            if (incomeSpeed >= 100) {
                 getResult()
                 stopRace()
                 inRace = false
             }
         }
     }
+
+    //я полагаю, проще конечно сразу в changeSpeed показать эти данные в активити, но в рамках
+    //учебного процесса пока что разнесем это в разные методы
+    //... да и вообще Speed должна быть "слушателем" навигации. Как только изменилось что-то, в ней меняются
+    //данные, а она уже рассылает всем уведомления
 
     private fun changeCorrdinates(lat: Double, long: Double) {
         val formatter = DecimalFormat("0.####")

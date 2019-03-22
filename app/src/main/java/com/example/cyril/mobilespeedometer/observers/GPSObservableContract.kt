@@ -2,7 +2,7 @@ package com.example.cyril.mobilespeedometer.observers
 
 import com.example.cyril.mobilespeedometer.main.MainPresenter
 
-interface IGPSObservable {
+interface GPSObservableContract {
     fun registerObserver(o: MainPresenter)
     fun removeObserver(o: MainPresenter)
     fun notifyLocationChanged()

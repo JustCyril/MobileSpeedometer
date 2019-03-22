@@ -20,4 +20,7 @@
     <string name="currentCoord_title">Текущие координаты</string>
     <string name="coordinate_mask">00.0000</string>
     <string name="CENTISECS">centisecs</string>
+    <string name="SECS">secs</string>
+    <string name="ISTIMERRUNNING">isTimerRunning</string>
+
 </resources>

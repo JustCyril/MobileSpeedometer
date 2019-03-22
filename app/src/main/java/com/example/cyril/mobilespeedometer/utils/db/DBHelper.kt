@@ -15,7 +15,7 @@ import com.example.cyril.mobilespeedometer.Config.Companion.TABLE_NAME
 import com.example.cyril.mobilespeedometer.main.MainPresenter
 import com.example.cyril.mobilespeedometer.model.Result
 
-class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VER), IDBObservable {
+class DBHelper (context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VER), DBObservableContract {
 
     private var observer: MainPresenter? = null
 

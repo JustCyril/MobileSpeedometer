@@ -159,8 +159,8 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putInt(getString(R.string.CENTISECS), centisecs)
-        outState?.putInt("secs", secs)
-        outState?.putBoolean("isTimerRunning", isTimerRunning)
+        outState?.putInt(getString(R.string.SECS), secs)
+        outState?.putBoolean(getString(R.string.ISTIMERRUNNING), isTimerRunning)
 
     }
 
@@ -169,9 +169,9 @@ class MainActivity : AppCompatActivity() {
 
         //проверка, потому что иначе жалуется на Int? вместо Int
         if (savedState != null) {
-            centisecs = savedState.getInt("centisecs")
-            secs = savedState.getInt("secs")
-            isTimerRunning = savedState.getBoolean("isTimerRunning")
+            centisecs = savedState.getInt(getString(R.string.CENTISECS))
+            secs = savedState.getInt(getString(R.string.SECS))
+            isTimerRunning = savedState.getBoolean(getString(R.string.ISTIMERRUNNING))
         }
 
     }

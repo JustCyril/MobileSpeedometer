@@ -5,9 +5,9 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import com.example.cyril.mobilespeedometer.main.MainPresenter
-import com.example.cyril.mobilespeedometer.observers.IGPSObservable
+import com.example.cyril.mobilespeedometer.observers.GPSObservableContract
 
-class GPSLocationListener: LocationListener, IGPSObservable {
+class GPSLocationListener: LocationListener, GPSObservableContract {
 
     var location = Location(LocationManager.GPS_PROVIDER)
 
