@@ -1,19 +1,20 @@
 package com.example.cyril.mobilespeedometer.main
 
+import android.widget.Toast
 import com.example.cyril.mobilespeedometer.adapter.RecViewResultsAdapter
-import com.example.cyril.mobilespeedometer.utils.db.DBHelper
-import com.example.cyril.mobilespeedometer.utils.db.DBObserverContract
 import com.example.cyril.mobilespeedometer.model.Result
+import com.example.cyril.mobilespeedometer.model.repository.Repository
 import com.example.cyril.mobilespeedometer.utils.navi.GPSLocationListener
 import com.example.cyril.mobilespeedometer.observers.GPSObserverContract
 import com.example.cyril.mobilespeedometer.utils.SpeedHelper
 import java.text.DecimalFormat
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
-class MainPresenter (private var activity: MainActivity) : GPSObserverContract, DBObserverContract {
+class MainPresenter (private var activity: MainActivity) : GPSObserverContract {
 
     private var speedHelper = SpeedHelper()
     var locationListener = GPSLocationListener() //not private because of activity location updates request
-    private var dbHelper = DBHelper(activity)
     //private var listResults: List<Result> = ArrayList<Result>()
 
     private var readyToRace = false
@@ -27,14 +28,13 @@ class MainPresenter (private var activity: MainActivity) : GPSObserverContract, 
 
     private fun regAsObserver() {
         locationListener.registerObserver(this)
-        dbHelper.registerObserver(this)
     }
 
     // ---- Observer-actions --------
 
     override fun onLocationChange() {
         changeSpeed(locationListener.location.speed.toInt())
-        changeCorrdinates(locationListener.location.latitude, locationListener.location.longitude)
+        changeCoordinates(locationListener.location.latitude, locationListener.location.longitude)
     }
 
     override fun onGPSStatusChange(status : String) {
@@ -48,19 +48,21 @@ class MainPresenter (private var activity: MainActivity) : GPSObserverContract, 
     }
 
     private fun changeSpeed (incomeSpeed: Int) {
-        speedHelper.setSpeed(incomeSpeed*3600/1000)//speed is in km/h
 
-        activity.changeDisplayedSpeed(incomeSpeed)
+        val speed = (incomeSpeed*3600/1000).toInt() //speed is in km/h
+
+        speedHelper.setSpeed(speed)
+        activity.changeDisplayedSpeed(speed)
 
         if (readyToRace) {
-            if (incomeSpeed > 1) {
+            if (speed > 1) {
                 inRace = true
                 readyToRace = false
                 StartTimer()
             }
         }
         if (inRace) {
-            if (incomeSpeed >= 100) {
+            if (speed >= 100) {
                 getResult()
                 stopRace()
                 inRace = false
@@ -68,12 +70,7 @@ class MainPresenter (private var activity: MainActivity) : GPSObserverContract, 
         }
     }
 
-    //я полагаю, проще конечно сразу в changeSpeed показать эти данные в активити, но в рамках
-    //учебного процесса пока что разнесем это в разные методы
-    //... да и вообще Speed должна быть "слушателем" навигации. Как только изменилось что-то, в ней меняются
-    //данные, а она уже рассылает всем уведомления
-
-    private fun changeCorrdinates(lat: Double, long: Double) {
+    private fun changeCoordinates(lat: Double, long: Double) {
         val formatter = DecimalFormat("0.####")
         activity.changeDisplayedCoordinates(formatter.format(lat), formatter.format(long))
     }
@@ -141,18 +138,36 @@ class MainPresenter (private var activity: MainActivity) : GPSObserverContract, 
             result = Result(0, date, time, "$secs : $cent")
         } else { result = Result(0, date, time, "$secs : $centisecs")
         }
-        dbHelper.addResult(result)
-    }
 
-    override fun onDBUpdated() {
+        Repository(activity).addResult(result)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe (
+                {
+                    if (!it) {
+                        Toast.makeText(activity, "Ошибка сохранения данных!", Toast.LENGTH_LONG).show()
+                    }
+                }
+            )
+
         refreshListResult()
     }
 
     fun refreshListResult() {
-        val listResults = dbHelper.getAll()
-        //или в активити передавать listResults?... Но тогда она узнает о данных типа Result
-        val adapter = RecViewResultsAdapter(listResults)
-        activity.refreshListResult(adapter)
+
+        Repository(activity).getAllResult()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe (
+                {
+                    activity.refreshListResult(RecViewResultsAdapter(it))
+                },
+                {
+                    Toast.makeText(activity, "Ошибка отображения данных!", Toast.LENGTH_LONG).show()
+                }
+            )
+
+
     }
 
 }

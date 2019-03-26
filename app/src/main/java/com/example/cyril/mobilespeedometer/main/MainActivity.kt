@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
             employLocationManager(SLOW_INTERVAL, LONG_DISTANCE)
         }
 
+
         Repository(this).helloWorld()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
@@ -112,7 +113,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Что-то пошло не так", Toast.LENGTH_LONG).show()
                 }
             )
-
 
         /* ----------- LEGACY-init---------------------------------
 

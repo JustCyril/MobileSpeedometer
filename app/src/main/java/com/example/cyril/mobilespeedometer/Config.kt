@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 class Config {
 
     companion object {
-        const val HELLO = "Привет дружище"
+        const val HELLO = "Привет, дружище!"
         const val DATABASE_VER = 1
         const val DATABASE_NAME =  "RESULTS.db"
 

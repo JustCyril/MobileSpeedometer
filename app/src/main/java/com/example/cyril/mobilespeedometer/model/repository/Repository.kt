@@ -4,25 +4,23 @@ import android.content.Context
 import com.example.cyril.mobilespeedometer.model.Result
 import com.example.cyril.mobilespeedometer.utils.db.DBHelper
 import io.reactivex.Observable
-import java.lang.Error
 
 class Repository(private val context: Context): RepositoryContract {
 
     override fun getAllResult(): Observable<List<Result>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return Observable.just(DBHelper(context).getAll())
     }
 
-    override fun addResult(): Observable<Boolean> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun addResult(result: Result): Observable<Boolean> {
+        return Observable.just(DBHelper(context).addResult(result))
     }
 
-    override fun deleteResult(): Observable<Boolean> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun deleteResult(result: Result): Observable<Boolean> {
+        return Observable.just(DBHelper(context).deleteResult(result))
     }
 
-    override fun helloWorld(): Observable<String> {
-
-        return Observable.just(DBHelper(context).getHelloWorld())
+    fun helloWorld(): Observable<String> {
+    return Observable.just(DBHelper(context).getHelloWorld())
     }
 
 

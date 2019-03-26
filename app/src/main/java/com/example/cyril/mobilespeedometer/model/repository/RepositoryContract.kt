@@ -6,9 +6,6 @@ import com.example.cyril.mobilespeedometer.model.Result
 interface RepositoryContract {
 
     fun getAllResult(): Observable<List<Result>>
-    fun addResult(): Observable<Boolean>
-    fun deleteResult(): Observable<Boolean>
-
-    //Просто для примера
-    fun helloWorld(): Observable<String>
+    fun addResult(result: Result): Observable<Boolean>
+    fun deleteResult(result: Result): Observable<Boolean>
 }
