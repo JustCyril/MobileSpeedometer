@@ -9,7 +9,9 @@ import android.widget.TextView
 import com.example.cyril.mobilespeedometer.model.Result
 import com.example.cyril.mobilespeedometer.R
 
-class RecViewResultsAdapter (private val results: List<Result>, private var onItemLongClickListener: (Result) -> Unit): RecyclerView.Adapter<RecViewResultsAdapter.RecViewHolder>() {
+class RecViewResultsAdapter (private val results: List<Result>, private var onItemLongClickListener: (Result) -> Boolean): RecyclerView.Adapter<RecViewResultsAdapter.RecViewHolder>() {
+
+
 
     class RecViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView = itemView?.findViewById(R.id.item_textView) as TextView
@@ -32,4 +34,5 @@ class RecViewResultsAdapter (private val results: List<Result>, private var onIt
     override fun getItemCount(): Int {
         return results.size
     }
+
 }

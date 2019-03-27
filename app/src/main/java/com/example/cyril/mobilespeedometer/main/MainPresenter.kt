@@ -170,19 +170,24 @@ class MainPresenter (private var activity: MainActivity) : GPSObserverContract {
 
     }
 
-    fun deleteResult(result: Result) {
+    fun deleteResult(result: Result) : Boolean {
         //delete result from recycler view and from db
         Repository(activity).deleteResult(result)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
-                    if (!it) {
+                    if (it) {
+                        Toast.makeText(activity, "Запись удалена!", Toast.LENGTH_LONG).show()
+                    } else {
                         Toast.makeText(activity, "Ошибка удаления данных!", Toast.LENGTH_LONG).show()
                     }
                 }
             )
 
+        refreshListResult()
+
+        return true
     }
 
 }
