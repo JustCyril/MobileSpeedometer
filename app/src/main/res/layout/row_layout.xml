@@ -9,6 +9,8 @@
             android:id="@+id/item_textView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical"
+            android:text="@string/coordinate_mask"
+            android:textSize="20sp"/>
 
 </android.support.constraint.ConstraintLayout>

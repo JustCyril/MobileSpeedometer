@@ -160,13 +160,28 @@ class MainPresenter (private var activity: MainActivity) : GPSObserverContract {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe (
                 {
-                    activity.refreshListResult(RecViewResultsAdapter(it))
+                    activity.refreshListResult(RecViewResultsAdapter(it, {item -> deleteResult(item)}))
                 },
                 {
                     Toast.makeText(activity, "Ошибка отображения данных!", Toast.LENGTH_LONG).show()
                 }
             )
 
+
+    }
+
+    fun deleteResult(result: Result) {
+        //delete result from recycler view and from db
+        Repository(activity).deleteResult(result)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    if (!it) {
+                        Toast.makeText(activity, "Ошибка удаления данных!", Toast.LENGTH_LONG).show()
+                    }
+                }
+            )
 
     }
 

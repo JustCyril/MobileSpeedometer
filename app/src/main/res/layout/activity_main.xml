@@ -216,7 +216,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/res_column_titles"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:gravity="center"
             android:typeface="serif"
             app:layout_constraintLeft_toLeftOf="parent"

@@ -4,11 +4,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.TextView
 import com.example.cyril.mobilespeedometer.model.Result
 import com.example.cyril.mobilespeedometer.R
 
-class RecViewResultsAdapter (private val results: List<Result>): RecyclerView.Adapter<RecViewResultsAdapter.RecViewHolder>() {
+class RecViewResultsAdapter (private val results: List<Result>, private var onItemLongClickListener: (Result) -> Unit): RecyclerView.Adapter<RecViewResultsAdapter.RecViewHolder>() {
 
     class RecViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView = itemView?.findViewById(R.id.item_textView) as TextView
@@ -24,6 +25,8 @@ class RecViewResultsAdapter (private val results: List<Result>): RecyclerView.Ad
         val time = results[position].time.toString()
         val result = results[position].resultTime.toString()
         holder?.textView?.text = "$date; $time; $result"
+
+        holder?.itemView.setOnLongClickListener { onItemLongClickListener(results[position]) }
     }
 
     override fun getItemCount(): Int {
